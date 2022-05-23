@@ -18,10 +18,7 @@ export const COLORS = {
 
   //Text COlors
   textColorOne: '#97ABB3',
-
-
-
-
+  textColorTwo: '#7E949F',
 
   darkCyan: '#032130',
   grayColor1: '#828282',
@@ -78,81 +75,81 @@ export const SIZES = {
   height,
 };
 
-export const FONTS = {
-  largeTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
-    fontSize: SIZES.largeTitle,
-    lineHeight: 55,
-    letterSpacing: 0.35,
-  },
-  h1: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
-    fontSize: SIZES.h1,
-    lineHeight: 40,
-    fontWeight: '700',
-    letterSpacing: 0.35,
-  },
-  h2: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
-    fontSize: SIZES.h2,
-    lineHeight: 30,
-    fontWeight: '700',
-    letterSpacing: 0.35,
-  },
-  h3: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Medium' : 'DMSans-Medium',
-    fontSize: SIZES.h3,
-    lineHeight: 22,
-    fontWeight: '500',
-  },
-  h4: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Medium' : 'DMSans-Medium',
-    fontSize: SIZES.h4,
-    lineHeight: 22.13,
-    fontWeight: '700',
-  },
-  body1: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body1,
-    lineHeight: 36,
-    fontWeight: '700',
-  },
-  body2: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body2,
-    lineHeight: 37,
-    fontWeight: '700',
-  },
-  body3: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body3,
-    lineHeight: 22,
-    fontWeight: '400',
-    letterSpacing: 0.35,
-  },
-  body4: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body4,
-    lineHeight: 18.22,
-    fontWeight: '400',
-    letterSpacing: 0.4,
-  },
-  body5: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body5,
-    lineHeight: 22,
-    fontWeight: '400',
-  },
-  body6: {
-    fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
-    fontSize: SIZES.body6,
-    lineHeight: 15.62,
-    fontWeight: '400',
-  },
-};
+// export const FONTS = {
+//   largeTitle: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
+//     fontSize: SIZES.largeTitle,
+//     lineHeight: 55,
+//     letterSpacing: 0.35,
+//   },
+//   h1: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
+//     fontSize: SIZES.h1,
+//     lineHeight: 40,
+//     fontWeight: '700',
+//     letterSpacing: 0.35,
+//   },
+//   h2: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Bold' : 'DMSans-Bold',
+//     fontSize: SIZES.h2,
+//     lineHeight: 30,
+//     fontWeight: '700',
+//     letterSpacing: 0.35,
+//   },
+//   h3: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Medium' : 'DMSans-Medium',
+//     fontSize: SIZES.h3,
+//     lineHeight: 22,
+//     fontWeight: '500',
+//   },
+//   h4: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Medium' : 'DMSans-Medium',
+//     fontSize: SIZES.h4,
+//     lineHeight: 22.13,
+//     fontWeight: '700',
+//   },
+//   body1: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body1,
+//     lineHeight: 36,
+//     fontWeight: '700',
+//   },
+//   body2: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body2,
+//     lineHeight: 37,
+//     fontWeight: '700',
+//   },
+//   body3: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body3,
+//     lineHeight: 22,
+//     fontWeight: '400',
+//     letterSpacing: 0.35,
+//   },
+//   body4: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body4,
+//     lineHeight: 18.22,
+//     fontWeight: '400',
+//     letterSpacing: 0.4,
+//   },
+//   body5: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body5,
+//     lineHeight: 22,
+//     fontWeight: '400',
+//   },
+//   body6: {
+//     fontFamily: Platform.OS === 'ios' ? 'DM Sans Regular' : 'DMSans-Regular',
+//     fontSize: SIZES.body6,
+//     lineHeight: 15.62,
+//     fontWeight: '400',
+//   },
+// };
 
 export const DUMMYDFODummNTS = {};
 
-const appTheme = {COLORS, SIZES, FONTS};
+const appTheme = {COLORS, SIZES};
 
 export default appTheme;

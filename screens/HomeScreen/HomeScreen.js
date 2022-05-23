@@ -24,7 +24,7 @@ import {
   TransactionCard,
 } from '../../components/commons';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [searchForm, setSearchForm] = React.useState(false);
 
   return (
@@ -57,15 +57,17 @@ const HomeScreen = () => {
             <View>
               <Text style={HomeScreenStyles.subSectionLTR}>Active Banks</Text>
             </View>
-            <View style={HomeScreenStyles.subSectionRTLWrapper}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Bank')}
+              style={HomeScreenStyles.subSectionRTLWrapper}>
               <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
           <View style={HomeScreenStyles.bankCardContainer}>
-            <BankCardGrid />
-            <BankCardGrid />
-            <BankCardGrid />
+            <BankCardGrid type="grid" />
+            <BankCardGrid type="grid" />
+            <BankCardGrid type="grid" />
           </View>
 
           <View style={HomeScreenStyles.subSectionContainer}>

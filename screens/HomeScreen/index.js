@@ -1,5 +1,5 @@
-import HomeScreen from "./HomeScreen";
+import HomeScreen from './HomeScreen';
+import MyBankScreen from './MyBankScreen';
+import MyBankInfoScreen from './MyBankInfoScreen';
 
-export {
-    HomeScreen
-}
+export {HomeScreen, MyBankScreen, MyBankInfoScreen};

@@ -2,24 +2,26 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {COLORS, SIZES} from '../../constants';
 
-const TransactionCard = () => {
+const RegisteredDevices = () => {
   return (
-    <View style={styles.transactionCardList}>
+    <View style={styles.registeredDeviceList}>
       <View>
-        <Text style={styles.transactionCardDesc}>Deposit for Jane Doe</Text>
-        <Text style={styles.transactionCardBank}>Diamond Bank</Text>
+        <Text style={styles.registeredDeviceDesc}>POS Machine 1</Text>
+        <Text style={styles.registeredDeviceBank}>
+          IMEI: 565661165316511JK46
+        </Text>
       </View>
-      <View>
-        <Text style={styles.transactionCardAmount}>N25,300</Text>
+      <View style={styles.registeredDeviceCta}>
+        <Text style={styles.registeredDeviceCtaText}>View</Text>
       </View>
     </View>
   );
 };
 
-export default TransactionCard;
+export default RegisteredDevices;
 
 const styles = StyleSheet.create({
-  transactionCardList: {
+  registeredDeviceList: {
     backgroundColor: '#123D51',
     borderRadius: 8,
     borderColor: 'rgba(244, 244, 244, 0.4)',
@@ -33,25 +35,34 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.padding * 1,
   },
 
-  transactionCardDesc: {
+  registeredDeviceDesc: {
     color: COLORS.borderColor,
     fontWeight: '700',
     fontSize: 16,
     lineHeight: 20,
   },
 
-  transactionCardBank: {
+  registeredDeviceBank: {
     color: COLORS.textColorOne,
     fontWeight: '400',
     fontSize: 12,
     lineHeight: 20,
   },
 
-  transactionCardAmount: {
+  registeredDeviceCta: {
+    backgroundColor: COLORS.transparent,
+    paddingVertical: SIZES.padding * 1,
+    paddingHorizontal: SIZES.padding * 2,
+    borderRadius: 4,
+    borderColor: 'rgba(244, 244, 244, 0.4)',
+    borderWidth: 0.3,
+    borderStyle: 'solid',
+  },
+
+  registeredDeviceCtaText: {
     color: COLORS.borderColor,
     fontWeight: '400',
-    fontSize: 16,
+    fontSize: 10,
     lineHeight: 20,
-    marginTop: SIZES.padding * 0.7,
   },
 });
