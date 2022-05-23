@@ -81,7 +81,18 @@ const globalStyles = StyleSheet.create({
     height: 40,
   },
 
-  headerSearchIcon: {},
+  headerSearchContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: SIZES.padding * 2,
+    paddingVertical: SIZES.padding * 1.5,
+  },
+
+  headerSearchicon: {
+    width: 30,
+    height: 30,
+  },
 });
 
 export default globalStyles;
