@@ -1,5 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput, TouchableWithoutFeedback} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  TouchableWithoutFeedback,
+  Modal,
+  FlatList,
+} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
@@ -46,43 +56,93 @@ const SignUpForm = () => {
       });
   }, []);
 
+  const renderSearchHeader = () => {
+    return (
+      <View
+        style={{
+          marginVertical: SIZES.padding * 1.5,
+          paddingHorizontal: SIZES.padding * 2,
+        }}>
+        <TextInput
+          style={{
+            borderColor: COLORS.borderColor,
+            borderStyle: 'solid',
+            borderWidth: 1,
+            backgroundColor: COLORS.transparent,
+            paddingHorizontal: SIZES.padding * 2,
+            height: 45,
+            color: COLORS.grayColor,
+            borderRadius: 5,
+          }}
+          placeholder="Search"
+          placeholderTextColor={COLORS.placeHolderColor}
+          selectionColor={COLORS.placeHolderColor}
+          keyboardType="default"
+        />
+      </View>
+    );
+  };
+
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        style={{padding: SIZES.padding, flexDirection: 'row'}}
+        style={{
+          paddingHorizontal: SIZES.padding * 2,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
         onPress={() => {
           setSelectedAreaCode(item);
           setModalVisible(false);
         }}>
-        <Image
-          source={{uri: item.flag}}
+        <View
           style={{
-            width: 30,
-            height: 30,
-            marginRight: 10,
-          }}
-        />
-        <Text style={{...FONTS.body4, color: COLORS.white}}>{item.name}</Text>
+            flexDirection: 'row',
+            marginVertical: SIZES.padding * 1,
+          }}>
+          <Image
+            source={{uri: item.flag}}
+            style={{
+              width: 25,
+              height: 15,
+              marginRight: SIZES.padding * 2,
+              marginTop: 3,
+            }}
+          />
+          <Text style={{color: COLORS.white}}>{item.name}</Text>
+        </View>
+        <View>
+          <Text style={{color: COLORS.white}}>{item.dialCode}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
 
-//   const renderAreaCodeModal = (
-//     <Modal animationType="slide" transparent={true} visible={modalVisbile}>
-//       <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-//         <View>
-//           <View>
-//             <FlatList
-//               data={areaCode}
-//               renderItem={renderItem}
-//               keyExtractor={item => item.code}
-//               showsVerticalScrollIndicator={false}
-//             />
-//           </View>
-//         </View>
-//       </TouchableWithoutFeedback>
-//     </Modal>
-//   );
+  const renderAreaCodeModal = (
+    <Modal animationType="slide" transparent={true} visible={modalVisbile}>
+      <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <View
+            style={{
+              width: SIZES.width * 1,
+              backgroundColor: COLORS.textBlue,
+            }}>
+            <FlatList
+              data={areaCode}
+              renderItem={renderItem}
+              keyExtractor={item => item.code}
+              showsVerticalScrollIndicator={false}
+              ListHeaderComponent={renderSearchHeader}
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('Kindly provide your first name'),
@@ -177,6 +237,7 @@ const SignUpForm = () => {
               />
 
               <TouchableOpacity
+                onPress={() => setModalVisible(true)}
                 style={formStyles.defaultTextInputCountryHolder}>
                 <Image
                   source={{uri: selectedAreaCode.flag}}
@@ -282,7 +343,7 @@ const SignUpForm = () => {
             <TouchableOpacity
               onPress={handleSubmit}
               style={buttonStyles.defaultButton}>
-              <Text style={typographyStyles.defaultButtonText}>Login</Text>
+              <Text style={typographyStyles.defaultButtonText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -293,6 +354,7 @@ const SignUpForm = () => {
               <Text style={typographyStyles.textHighLight}>Login</Text>
             </Text>
           </TouchableOpacity>
+          {renderAreaCodeModal}
         </>
       )}
     </Formik>
