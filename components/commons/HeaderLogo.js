@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {globalStyles} from '../../assets/styles';
@@ -6,6 +7,22 @@ import {images, icons, SIZES} from '../../constants';
 const HeaderLogo = ({type}) => {
   return (
     <>
+      {type === 'register' && (
+        <View style={globalStyles.headerLogoContainer}>
+          <Image
+            source={images.qappLogo}
+            resizeMode="contain"
+            style={[
+              globalStyles.headerLogoImg,
+              {
+                height: 130,
+                width: 100,
+              },
+            ]}
+          />
+        </View>
+      )}
+
       {type === 'general' && (
         <View style={globalStyles.headerLogoContainer}>
           <Image

@@ -4,6 +4,7 @@ import BankCardGrid from './BankCardGrid';
 import TransactionCard from './TransactionCard';
 import RegisteredDevices from './RegisteredDevices';
 import OptionTabs from './OptionTabs';
+import AccountProfile from './AccountProfile';
 
 export {
   SectionTitle,
@@ -12,4 +13,5 @@ export {
   TransactionCard,
   RegisteredDevices,
   OptionTabs,
+  AccountProfile,
 };

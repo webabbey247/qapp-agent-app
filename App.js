@@ -5,6 +5,7 @@ import {LogBox} from 'react-native';
 import {SplashScreen} from './screens/LaunchScreen';
 import {
   LoginScreen,
+  SignUpScreen,
   ForgotPassScreen,
   ResetPassScreen,
 } from './screens/AuthScreen';
@@ -33,8 +34,9 @@ const LaunchStackScreen = () => {
 const AuthStack = createStackNavigator();
 const AuthStackScreen = () => {
   return (
-    <AuthStack.Navigator headerMode="none" initialRouteName={'ForgotPass'}>
+    <AuthStack.Navigator headerMode="none" initialRouteName={'Login'}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
+      <AuthStack.Screen name="SignUp" component={SignUpScreen} />
       <AuthStack.Screen name="ForgotPass" component={ForgotPassScreen} />
       <AuthStack.Screen name="ResetPass" component={ResetPassScreen} />
     </AuthStack.Navigator>
@@ -45,7 +47,7 @@ const AuthStackScreen = () => {
 const HomeStack = createStackNavigator();
 const HomeStackScreen = () => {
   return (
-    <HomeStack.Navigator headerMode="none" initialRouteName={'Bank'}>
+    <HomeStack.Navigator headerMode="none" initialRouteName={'Home'}>
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Bank" component={MyBankScreen} />
       <HomeStack.Screen name="BankInfo" component={MyBankInfoScreen} />
@@ -61,7 +63,7 @@ const RootStackScreen = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={'HomeScreen'}>
+      initialRouteName={'LaunchScreen'}>
       <RootStack.Screen name="LaunchScreen" children={LaunchStackScreen} />
       <RootStack.Screen name="AuthScreen" children={AuthStackScreen} />
       <RootStack.Screen name="HomeScreen" children={HomeStackScreen} />

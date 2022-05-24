@@ -17,9 +17,12 @@ import {
   OptionTabs,
   TransactionCard,
   RegisteredDevices,
+  AccountProfile,
 } from '../../components/commons';
 
 const MyBankInfoScreen = ({navigation}) => {
+  const [history, setHistory] = React.useState(0);
+
   return (
     <SafeAreaView
       behavior={Platform.OS === 'ios' ? 'padding' : null}
@@ -61,19 +64,55 @@ const MyBankInfoScreen = ({navigation}) => {
           </View>
         </TouchableOpacity>
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
-          <View style={HomeScreenStyles.transactionListContainer}>
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-            <RegisteredDevices />
-            <RegisteredDevices />
-            <RegisteredDevices />
-            <RegisteredDevices />
+          <View
+            style={{
+              paddingHorizontal: SIZES.padding * 2,
+            }}>
+            <AccountProfile />
           </View>
+
+          {history === 0 ? (
+            <>
+              <View style={HomeScreenStyles.subSectionContainer}>
+                <View>
+                  <Text style={HomeScreenStyles.subSectionLTR}>
+                    Recent History
+                  </Text>
+                </View>
+                <View style={HomeScreenStyles.subSectionRTLWrapper}>
+                  <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
+                </View>
+              </View>
+              <View style={HomeScreenStyles.transactionListContainer}>
+                <TransactionCard />
+                <TransactionCard />
+                <TransactionCard />
+                <TransactionCard />
+                <TransactionCard />
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={HomeScreenStyles.subSectionContainer}>
+                <View>
+                  <Text style={HomeScreenStyles.subSectionLTR}>
+                    Registered Devices
+                  </Text>
+                </View>
+                <View style={HomeScreenStyles.subSectionRTLWrapper}>
+                  <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
+                </View>
+              </View>
+              <View style={HomeScreenStyles.transactionListContainer}>
+                <RegisteredDevices />
+                <RegisteredDevices />
+                <RegisteredDevices />
+                <RegisteredDevices />
+              </View>
+            </>
+          )}
         </ScrollView>
-        <OptionTabs type="history" />
+        <OptionTabs type="history" setHistory={setHistory} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

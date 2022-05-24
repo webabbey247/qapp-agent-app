@@ -53,7 +53,6 @@ const ResetPasswordForm = () => {
       }) => (
         <>
           <View style={formStyles.formWrapper}>
-         
             {/* Password */}
             <View style={{marginTop: SIZES.padding * 1.5}}>
               <View>
@@ -84,8 +83,8 @@ const ResetPasswordForm = () => {
               ) : null}
             </View>
 
-              {/* COnfirm Password */}
-              <View style={{marginTop: SIZES.padding * 2}}>
+            {/* COnfirm Password */}
+            <View style={{marginTop: SIZES.padding * 2}}>
               <View>
                 <TextInput
                   onChangeText={handleChange('password')}
@@ -114,11 +113,17 @@ const ResetPasswordForm = () => {
               ) : null}
             </View>
           </View>
-          <View style={[buttonStyles.buttonWrapper, {
-              marginTop: SIZES.padding * 2,
-          }]}>
+          <View
+            style={[
+              buttonStyles.buttonWrapper,
+              {
+                marginTop: SIZES.padding * 2,
+              },
+            ]}>
             <TouchableOpacity style={buttonStyles.defaultButton}>
-              <Text style={typographyStyles.defaultButtonText}>Reset Password</Text>
+              <Text style={typographyStyles.defaultButtonText}>
+                Reset Password
+              </Text>
             </TouchableOpacity>
           </View>
         </>

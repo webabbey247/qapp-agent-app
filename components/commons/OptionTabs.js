@@ -2,10 +2,10 @@ import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {COLORS, SIZES} from '../../constants';
 
-const OptionTabs = ({type}) => {
+const OptionTabs = ({type, setHistory}) => {
   return (
     <>
-      {type === 'banks' && (
+      {type === 'banks' ? (
         <View style={styles.optionTabsContainer}>
           <View style={styles.optionTabs}>
             <TouchableOpacity>
@@ -24,9 +24,7 @@ const OptionTabs = ({type}) => {
             </TouchableOpacity>
           </View>
         </View>
-      )}
-
-      {type === 'history' && (
+      ) : (
         <View
           style={[
             styles.optionTabsContainer,
@@ -35,10 +33,10 @@ const OptionTabs = ({type}) => {
             },
           ]}>
           <View style={styles.optionTabs}>
-            <TouchableOpacity>
-              <Text style={styles.optionTabActive}>Transaction History</Text>
+            <TouchableOpacity onPress={() => setHistory(0)}>
+              <Text style={styles.optionTabsText}>Transaction History</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setHistory(1)}>
               <Text style={styles.optionTabsText}>Registered Devices</Text>
             </TouchableOpacity>
           </View>

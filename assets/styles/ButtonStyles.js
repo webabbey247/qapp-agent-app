@@ -4,7 +4,7 @@ import {COLORS, SIZES, FONTS, images} from '../../constants';
 const buttonStyles = StyleSheet.create({
   buttonWrapper: {
     paddingHorizontal: SIZES.padding * 1,
-    marginBottom: SIZES.padding * 2,
+    marginBottom: SIZES.padding * 1,
   },
 
   defaultButton: {

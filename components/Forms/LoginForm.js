@@ -118,12 +118,14 @@ const LoginForm = () => {
               <Text style={typographyStyles.defaultButtonText}>Sign In</Text>
             </TouchableOpacity>
           </View>
-          <View style={globalStyles.footerActionWrapper}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SignUp')}
+            style={globalStyles.footerActionWrapper}>
             <Text style={typographyStyles.textFooterAction}>
               Not an agent yet?{' '}
               <Text style={typographyStyles.textHighLight}>Sign Up</Text>
             </Text>
-          </View>
+          </TouchableOpacity>
         </>
       )}
     </Formik>

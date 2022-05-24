@@ -42,14 +42,30 @@ const formStyles = StyleSheet.create({
   defaultTextInputIconHolder: {
     position: 'absolute',
     right: 5,
-    bottom: 5,
+    bottom: 10,
     width: 30,
     height: 30,
   },
 
   defaultTextInputIcon: {
-    width: 20,
-    height: 13,
+    width: 25,
+    height: 25,
+  },
+
+  defaultTextInputCountryHolder: {
+    position: 'absolute',
+    right: 5,
+    bottom: 10,
+    width: 70,
+    height: 30,
+    flexDirection: 'row',
+  },
+
+  defaultTextInputCountryIcon: {
+    width: 25,
+    height: 15,
+    marginHorizontal: 5,
+    marginTop: 5,
   },
 
   homeSearchFormContainer: {
