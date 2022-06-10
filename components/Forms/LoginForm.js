@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { login, reset } from '../../features/auth/authSlice';
 import {COLORS, SIZES, icons, FONTS} from '../../constants';
 import {
   globalStyles,
@@ -10,10 +12,48 @@ import {
   buttonStyles,
   typographyStyles,
 } from '../../assets/styles';
+import { SnackAlert } from '../../utils/SnackAlert';
+import { Messages } from '../../utils/Messages';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
+  const {loginPayload, isError, isSuccess} = useSelector((state) => state.auth);
+
+
+  React.useEffect(() => {
+
+    if(isError){
+      console.log("isError response tag", loginPayload.message ? loginPayload.message : "")
+    } 
+    
+    if(isSuccess) {
+      console.log("isSuccess response tag", loginPayload.result ? loginPayload.result : "")
+      if(loginPayload.success === false){
+        SnackAlert.show(loginPayload.message ? loginPayload.message : "");
+        console.log("isSuccess response tag", loginPayload.message ? loginPayload.message : "")
+      } else {
+        console.log("isSuccess result tag", loginPayload.result ? loginPayload.result : "")
+        // console.log("isSuccess token result tag", loginPayload.result ? loginPayload.result.jwt : "")
+        AsyncStorage.setItem('userDump', JSON.stringify(loginPayload.result))
+        AsyncStorage.setItem('userAuthToken', JSON.stringify(loginPayload.result.jwt))
+        setTimeout(() => {
+          navigation.navigate("HomeScreen", {
+            screen: "Home", 
+              params: {
+              user: loginPayload.result
+            }
+          });
+        }, 500);
+      }
+    }
+    dispatch(reset());    
+  }, [loginPayload, isError, isSuccess, navigation, dispatch])
+  
+
 
   const validationSchema = Yup.object().shape({
     emailAddress: Yup.string()
@@ -28,21 +68,30 @@ const LoginForm = () => {
       ),
   });
 
-  const userInfo = {
+  const loginInfo = {
     emailAddress: '',
     password: '',
   };
 
   return (
     <Formik
-      validationSchema={validationSchema}
-      initialValues={userInfo}
+      // validationSchema={validationSchema}
+      initialValues={loginInfo}
       onSubmit={(values, formikActions) => {
-        // setTimeout(() => {
-        //   console.log(values);
-        //   formikActions.resetForm();
-        //   navigation.navigate('OTPAuth', {typeUrl: 'Login'});
-        // }, 1000);
+
+        // const loginData = {
+        //   username: values.emailAddress,
+        //   password: values.password,
+        // }
+
+        const loginData = {
+          username: "balogun.abbey28@gmail.com",
+          password: "Null@001"
+        }
+        console.log("login data info checker", loginData)
+        dispatch(login(loginData));
+        formikActions.resetForm();
+
       }}>
       {({
         handleChange,
@@ -51,7 +100,6 @@ const LoginForm = () => {
         values,
         touched,
         errors,
-        isValid,
       }) => (
         <>
           <View style={formStyles.formWrapper}>
@@ -114,7 +162,7 @@ const LoginForm = () => {
             </TouchableOpacity>
           </View>
           <View style={buttonStyles.buttonWrapper}>
-            <TouchableOpacity style={buttonStyles.defaultButton}>
+            <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
               <Text style={typographyStyles.defaultButtonText}>Sign In</Text>
             </TouchableOpacity>
           </View>

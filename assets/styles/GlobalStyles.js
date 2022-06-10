@@ -67,18 +67,21 @@ const globalStyles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: SIZES.padding * 1,
     paddingHorizontal: SIZES.padding * 1.5,
-    paddingVertical: SIZES.padding * 1.5,
+    paddingVertical: SIZES.padding * 1,
   },
 
   headerMenuIcon: {
     width: 40,
     height: 40,
+    marginTop: SIZES.padding * 1
   },
 
   headerProfileImg: {
     width: 40,
     height: 40,
+    marginTop: SIZES.padding * 1
   },
 
   headerSearchContainer: {
@@ -86,7 +89,7 @@ const globalStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.padding * 2,
-    paddingVertical: SIZES.padding * 1.5,
+    paddingVertical: SIZES.padding * 1,
   },
 
   headerSearchicon: {

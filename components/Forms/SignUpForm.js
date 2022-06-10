@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,14 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import {Formik} from 'formik';
-import * as Yup from 'yup';
-import {useNavigation} from '@react-navigation/native';
-import {COLORS, SIZES, icons, FONTS} from '../../constants';
+import { Formik } from 'formik';
+import * as yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { register, reset } from '../../features/auth/authSlice';
+import { COLORS, SIZES, icons, FONTS } from '../../constants';
+import { SnackAlert } from '../../utils/SnackAlert';
+import { Messages } from '../../utils/Messages';
 import {
   globalStyles,
   formStyles,
@@ -22,12 +26,15 @@ import {
 } from '../../assets/styles';
 
 const SignUpForm = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [password, setPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(false);
   const [areaCode, setAreaCode] = useState([]);
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [modalVisbile, setModalVisible] = useState(false);
+  const {registerPayload, isError, isSuccess, userJWTToken }  = useSelector((state) => state.auth)
+
 
   React.useEffect(() => {
     fetch('https://restcountries.com/v3/all')
@@ -54,14 +61,42 @@ const SignUpForm = () => {
       .catch(err => {
         console.error('Request failed', err);
       });
-  }, []);
+
+      if(isError){
+        console.log("isError response tag", registerPayload.message ? registerPayload.message : "")
+      } 
+      
+      if(isSuccess) {
+        if(registerPayload.success === false){
+          SnackAlert.show(registerPayload.message ? registerPayload.message : "");
+          console.log("isSuccess response tag", registerPayload.message ? registerPayload.message : "")
+        } else {
+          setTimeout(() => {
+            navigation.navigate("Login");
+          }, 500);
+          SnackAlert.show(Messages.RegisterStatus);
+        }
+      }
+      dispatch(reset());
+
+  }, [registerPayload, isError, isSuccess, navigation, dispatch]);
+
+  const searchFilterFunction = text => {
+    const newData = areaCode.filter(item => {
+      const textData = text.toUpperCase();
+      return itemData.indexOf(textData) > -1;
+    });
+    setAreaCode(newData);
+  };
 
   const renderSearchHeader = () => {
     return (
       <View
         style={{
-          marginVertical: SIZES.padding * 1.5,
           paddingHorizontal: SIZES.padding * 2,
+          paddingVertical: SIZES.padding * 2,
+          backgroundColor: COLORS.bgColor,
+          marginBottom: SIZES.padding * 1.5,
         }}>
         <TextInput
           style={{
@@ -74,6 +109,8 @@ const SignUpForm = () => {
             color: COLORS.grayColor,
             borderRadius: 5,
           }}
+          onChangeText={text => searchFilterFunction(text)}
+          autoCorrect={false}
           placeholder="Search"
           placeholderTextColor={COLORS.placeHolderColor}
           selectionColor={COLORS.placeHolderColor}
@@ -83,7 +120,7 @@ const SignUpForm = () => {
     );
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         style={{
@@ -102,7 +139,7 @@ const SignUpForm = () => {
             marginVertical: SIZES.padding * 1,
           }}>
           <Image
-            source={{uri: item.flag}}
+            source={{ uri: item.flag }}
             style={{
               width: 25,
               height: 15,
@@ -110,10 +147,10 @@ const SignUpForm = () => {
               marginTop: 3,
             }}
           />
-          <Text style={{color: COLORS.white}}>{item.name}</Text>
+          <Text style={{ color: COLORS.white }}>{item.name}</Text>
         </View>
         <View>
-          <Text style={{color: COLORS.white}}>{item.dialCode}</Text>
+          <Text style={{ color: COLORS.white }}>{item.dialCode}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -137,6 +174,7 @@ const SignUpForm = () => {
               keyExtractor={item => item.code}
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={renderSearchHeader}
+              stickyHeaderIndices={[0]}
             />
           </View>
         </View>
@@ -144,39 +182,56 @@ const SignUpForm = () => {
     </Modal>
   );
 
-  const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('Kindly provide your first name'),
-    lastName: Yup.string().required('Kindly provide your last name'),
-    emailAddress: Yup.string()
+  const validationSchema = yup.object().shape({
+    firstName: yup.string().required('Kindly provide your first name'),
+    lastName: yup.string().required('Kindly provide your last name'),
+    emailAddress: yup.string()
       .email('Kindly provide a valid email address')
       .required('Kindly provide your registered email address'),
-    password: Yup.string()
-      .min(8, ({min}) => `Password must be atleast ${min} characters`)
+    phoneNumber: yup.string()
+      .required('Kindly provide your registered email address'),
+    password: yup.string()
+      .min(8, ({ min }) => `Password must be atleast ${min} characters`)
       .required('kindly provide your password')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
         'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
       ),
+    confirmPassword: yup.string()
+      .required("kindly provide your secured passcode!")
+      .min(8, ({ min }) => `Password must be atleast ${min} characters`)
+      .oneOf([yup.ref('password'), null], 'Passcode must match'),
+
   });
 
-  const userInfo = {
+  const registerInfo = {
     firstName: '',
     lastName: '',
+    phoneNumber: "",
     emailAddress: '',
     password: '',
+    confirmPassword: '',
   };
 
   return (
     <Formik
       validationSchema={validationSchema}
-      initialValues={userInfo}
+      initialValues={registerInfo}
       onSubmit={(values, formikActions) => {
         console.log(values);
-        // setTimeout(() => {
-        //   console.log(values);
-        //   formikActions.resetForm();
-        //   navigation.navigate('OTPAuth', {typeUrl: 'Login'});
-        // }, 1000);
+
+        const registerData = {
+          first_name: values.firstName,
+          last_name: values.lastName,
+          phone: [selectedAreaCode.dialCode, +(values.phoneNumber)].join(''),
+          email: values.emailAddress,
+          password: values.password,
+          confirm_password: values.confirmPassword,
+          is_confirm_password: true
+        }
+        console.log("register data info checker", registerData)
+        dispatch(register(registerData));
+        formikActions.resetForm();
       }}>
       {({
         handleChange,
@@ -185,7 +240,6 @@ const SignUpForm = () => {
         values,
         touched,
         errors,
-        isValid,
       }) => (
         <>
           <View style={formStyles.formWrapper}>
@@ -207,16 +261,15 @@ const SignUpForm = () => {
             </View>
 
             {/* Last Name */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
+            <View style={{ marginTop: SIZES.padding * 1.5 }}>
               <TextInput
                 onChangeText={handleChange('lastName')}
                 onBlur={handleBlur('lastName')}
-                value={values.emailAddress}
+                value={values.lastName}
                 style={formStyles.defaultTextInput}
                 placeholder="Last Name"
                 placeholderTextColor={COLORS.placeHolderColor}
                 selectionColor={COLORS.placeHolderColor}
-                keyboardType="email-address"
               />
               {errors.lastName && touched.lastName ? (
                 <Text style={formStyles.formErrorText}>{errors.lastName}</Text>
@@ -224,30 +277,33 @@ const SignUpForm = () => {
             </View>
 
             {/* Phone Number */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
-              <TextInput
-                onChangeText={handleChange('phoneNumber')}
-                onBlur={handleBlur('phoneNumber')}
-                value={values.phoneNumber}
-                style={formStyles.defaultTextInput}
-                placeholder="Phone Number"
-                placeholderTextColor={COLORS.placeHolderColor}
-                selectionColor={COLORS.placeHolderColor}
-                keyboardType="email-address"
-              />
+            <View>
+              <View style={{ marginTop: SIZES.padding * 1.5 }}>
+                <TextInput
+                  onChangeText={handleChange('phoneNumber')}
+                  onBlur={handleBlur('phoneNumber')}
+                  value={values.phoneNumber}
+                  style={formStyles.defaultTextInput}
+                  placeholder="Phone Number"
+                  placeholderTextColor={COLORS.placeHolderColor}
+                  selectionColor={COLORS.placeHolderColor}
+                keyboardType="number-pad"
+                />
 
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={formStyles.defaultTextInputCountryHolder}>
-                <Image
-                  source={{uri: selectedAreaCode.flag}}
-                  style={formStyles.defaultTextInputCountryIcon}
-                />
-                <Image
-                  source={icons.dropdownIcon}
-                  style={formStyles.defaultTextInputIcon}
-                />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(true)}
+                  style={formStyles.defaultTextInputCountryHolder}>
+                  <Image
+                    source={{ uri: selectedAreaCode.flag }}
+                    style={formStyles.defaultTextInputCountryIcon}
+                  />
+                  <Image
+                    source={icons.dropdownIcon}
+                    style={formStyles.defaultTextInputIcon}
+                  />
+                </TouchableOpacity>
+
+              </View>
               {errors.phoneNumber && touched.phoneNumber ? (
                 <Text style={formStyles.formErrorText}>
                   {errors.phoneNumber}
@@ -255,8 +311,9 @@ const SignUpForm = () => {
               ) : null}
             </View>
 
+
             {/* Email Address */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
+            <View style={{ marginTop: SIZES.padding * 1.5 }}>
               <TextInput
                 onChangeText={handleChange('emailAddress')}
                 onBlur={handleBlur('emailAddress')}
@@ -276,7 +333,7 @@ const SignUpForm = () => {
             </View>
 
             {/* Password */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
+            <View style={{ marginTop: SIZES.padding * 1.5 }}>
               <View>
                 <TextInput
                   onChangeText={handleChange('password')}
@@ -306,12 +363,12 @@ const SignUpForm = () => {
             </View>
 
             {/* COnfirm Password */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
+            <View style={{ marginTop: SIZES.padding * 1.5 }}>
               <View>
                 <TextInput
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
                   style={formStyles.defaultTextInput}
                   placeholder="Confirm Password"
                   placeholderTextColor={COLORS.placeHolderColor}
@@ -330,15 +387,15 @@ const SignUpForm = () => {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.password && touched.password ? (
-                <Text style={formStyles.formErrorText}>{errors.password}</Text>
+              {errors.confirmPassword && touched.confirmPassword ? (
+                <Text style={formStyles.formErrorText}>{errors.confirmPassword}</Text>
               ) : null}
             </View>
           </View>
           <View
             style={[
               buttonStyles.buttonWrapper,
-              {marginTop: SIZES.padding * 2},
+              { marginTop: SIZES.padding * 2 },
             ]}>
             <TouchableOpacity
               onPress={handleSubmit}

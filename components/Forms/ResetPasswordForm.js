@@ -11,8 +11,8 @@ import {
   typographyStyles,
 } from '../../assets/styles';
 
-const ResetPasswordForm = () => {
-  const navigation = useNavigation();
+const ResetPasswordForm = ({navigation}) => {
+  // const navigation = useNavigation();
   const [password, setPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(false);
 

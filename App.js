@@ -1,4 +1,6 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {LogBox} from 'react-native';
@@ -10,6 +12,7 @@ import {
   ResetPassScreen,
 } from './screens/AuthScreen';
 
+
 import {HomeScreen, MyBankScreen, MyBankInfoScreen} from './screens/HomeScreen';
 
 const theme = {
@@ -20,21 +23,19 @@ const theme = {
   },
 };
 
-// Launch Stack  //
 const LaunchStack = createStackNavigator();
 const LaunchStackScreen = () => {
   return (
-    <LaunchStack.Navigator headerMode="none" initialRouteName={'SplashScreen'}>
+    <LaunchStack.Navigator headerMode="none">
       <LaunchStack.Screen name="SplashScreen" component={SplashScreen} />
     </LaunchStack.Navigator>
   );
 };
 
-//Auth Stack  //
 const AuthStack = createStackNavigator();
 const AuthStackScreen = () => {
   return (
-    <AuthStack.Navigator headerMode="none" initialRouteName={'Login'}>
+    <AuthStack.Navigator headerMode="none">
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="SignUp" component={SignUpScreen} />
       <AuthStack.Screen name="ForgotPass" component={ForgotPassScreen} />
@@ -43,11 +44,10 @@ const AuthStackScreen = () => {
   );
 };
 
-//Home Stack  //
 const HomeStack = createStackNavigator();
 const HomeStackScreen = () => {
   return (
-    <HomeStack.Navigator headerMode="none" initialRouteName={'Home'}>
+    <HomeStack.Navigator headerMode="none">
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Bank" component={MyBankScreen} />
       <HomeStack.Screen name="BankInfo" component={MyBankInfoScreen} />
@@ -55,7 +55,6 @@ const HomeStackScreen = () => {
   );
 };
 
-// Root Stack //
 const RootStack = createStackNavigator();
 const RootStackScreen = () => {
   return (
@@ -75,9 +74,11 @@ LogBox.ignoreAllLogs(true);
 
 const App = () => {
   return (
+    <Provider store={store}>
     <NavigationContainer theme={theme}>
       <RootStackScreen />
     </NavigationContainer>
+    </Provider>
   );
 };
 

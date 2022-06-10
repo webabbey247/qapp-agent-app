@@ -4,7 +4,7 @@ import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {globalStyles} from '../../assets/styles';
 import {images, icons, SIZES} from '../../constants';
 
-const HeaderLogo = ({type}) => {
+const HeaderLogo = ({navigation, type}) => {
   return (
     <>
       {type === 'register' && (
@@ -34,7 +34,7 @@ const HeaderLogo = ({type}) => {
       )}
 
       {type === 'other' && (
-        <TouchableOpacity style={globalStyles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={globalStyles.headerContainer}>
           <View style={globalStyles.headerImgHolder}>
             <Image
               source={icons.chevronLeft}

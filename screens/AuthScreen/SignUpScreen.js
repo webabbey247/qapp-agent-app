@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {COLORS, icons} from '../../constants';
-import {NewBankForm, SignUpForm} from '../../components/Forms';
+import {SignUpForm} from '../../components/Forms';
 import {SectionTitle, HeaderLogo} from '../../components/commons';
 
 const SignUpScreen = () => {
@@ -22,7 +22,6 @@ const SignUpScreen = () => {
           <HeaderLogo type="register" />
           <SectionTitle title="Sign Up" subtitle="Personal Information" />
           <SignUpForm />
-          {/* <NewBankForm /> */}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -18,18 +18,18 @@ const ForgotPasswordForm = () => {
 
   const validationOneSchema = Yup.object().shape({
     emailAddress: Yup.string()
-      .email('Kindly provide a valid email address')
-      .required('Kindly provide your registered email address'),
+      .email('Kindly provide a valid email address'),
+      // .required('Kindly provide your registered email address'),
   });
 
   const validationStepTwoSchema = Yup.object().shape({
     emailAddress: Yup.string()
-      .email('Kindly provide a valid email address')
-      .required('Kindly provide your registered email address'),
+      .email('Kindly provide a valid email address'),
+      // .required('Kindly provide your registered email address'),
     otp: Yup.string()
-      .required(
-        'Kindly provide the OTP sent to your email address.',
-      )
+      // .required(
+      // //   'Kindly provide the OTP sent to your email address.',
+      // // )
       .matches(/^\d{10}$/, 'Kindly input a valid OTP')
       .min(6, 'OTP must be atleast the 6 characters long.')
       .max(6, 'OTP must be atleast the 6 characters long.'),
