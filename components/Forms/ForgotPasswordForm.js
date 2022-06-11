@@ -1,41 +1,81 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
-import {Formik} from 'formik';
+import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useNavigation} from '@react-navigation/native';
-import {COLORS, SIZES, icons, FONTS} from '../../constants';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { COLORS, SIZES, icons, FONTS } from '../../constants';
+import { forgetPass, reset } from '../../features/auth/authSlice';
 import {
-  globalStyles,
   formStyles,
   buttonStyles,
   typographyStyles,
 } from '../../assets/styles';
+import { SnackAlert } from '../../utils/SnackAlert';
+import { Messages } from '../../utils/Messages';
+
 
 const ForgotPasswordForm = () => {
   const navigation = useNavigation();
-  const [showOTP, setShowOTP] = React.useState(false);
+  const dispatch = useDispatch();
   const [stepTwo, setSteptwo] = React.useState(false);
+  const { forgetPayload, isError, isSuccess } = useSelector((state) => state.auth);
+
+  React.useEffect(() => {
+
+    if (isError) {
+      console.log("isError response tag", forgetPayload.message ? forgetPayload.message : "")
+    }
+
+    if (isSuccess) {
+      console.log("isSuccess response tag", forgetPayload.result ? forgetPayload.result : "")
+      if (forgetPayload.success === false) {
+        SnackAlert.show(forgetPayload.message ? forgetPayload.message : "");
+        // console.log("isSuccess response tag", forgetPayload.message ? forgetPayload.message : "")
+      } else {
+        if (stepTwo) {
+          console.log("isSuccess token result tag", forgetPayload.result ? forgetPayload.result.token : "")
+          setTimeout(() => {
+            navigation.navigate("ResetPass",{
+                params: {
+                token: forgetPayload.result.token
+              }
+            });
+          }, 500);
+        } else {
+          SnackAlert.show(forgetPayload.message ? forgetPayload.message : "");
+          setSteptwo(true);
+          console.log("isSuccess result tag", forgetPayload.result ? forgetPayload.result : "")
+        }
+
+      }
+    }
+    // dispatch(reset());
+  }, [forgetPayload, isError, isSuccess])
+
+
+
 
   const validationOneSchema = Yup.object().shape({
     emailAddress: Yup.string()
-      .email('Kindly provide a valid email address'),
-      // .required('Kindly provide your registered email address'),
+      .email('Kindly provide a valid email address')
+      .required('Kindly provide your registered email address'),
   });
 
   const validationStepTwoSchema = Yup.object().shape({
     emailAddress: Yup.string()
-      .email('Kindly provide a valid email address'),
-      // .required('Kindly provide your registered email address'),
+      .email('Kindly provide a valid email address')
+      .required('Kindly provide your registered email address'),
     otp: Yup.string()
-      // .required(
-      // //   'Kindly provide the OTP sent to your email address.',
-      // // )
+      .required(
+        'Kindly provide the OTP sent to your email address.',
+      )
       .matches(/^\d{10}$/, 'Kindly input a valid OTP')
       .min(6, 'OTP must be atleast the 6 characters long.')
       .max(6, 'OTP must be atleast the 6 characters long.'),
   });
 
-  const userInfo = {
+  const resetPassInfo = {
     emailAddress: '',
     otp: '',
   };
@@ -46,16 +86,22 @@ const ForgotPasswordForm = () => {
         validationSchema={
           stepTwo ? validationStepTwoSchema : validationOneSchema
         }
-        initialValues={userInfo}
+        initialValues={resetPassInfo}
         onSubmit={(values, formikActions) => {
-              setShowOTP(true);
-              setSteptwo(true);
-              const formData = {
-                emailAddress: values.emailAddress,
-                otp: values.otp,
-              };
-              console.log(formData)
-              navigation.navigate('ResetPass')
+
+          const resetPassInfo = {
+            emailAddress: values.emailAddress,
+            otp: stepTwo ? values.otp : "",
+          };
+
+          if (stepTwo) {
+            // dispatch(forgetPass(resetPassInfo));
+            console.log("Step Two Reset Password", resetPassInfo)
+          } else {
+            console.log("Forget Password", resetPassInfo)
+            dispatch(forgetPass(resetPassInfo));
+          }
+          // formikActions.resetForm();
         }}>
         {({
           handleChange,
@@ -64,7 +110,6 @@ const ForgotPasswordForm = () => {
           values,
           touched,
           errors,
-          isValid,
         }) => (
           <>
             <View
@@ -75,7 +120,7 @@ const ForgotPasswordForm = () => {
                 },
               ]}>
               {/* Email Address */}
-              <View style={{marginTop: SIZES.padding * 1}}>
+              <View style={{ marginTop: SIZES.padding * 1 }}>
                 <TextInput
                   onChangeText={handleChange('emailAddress')}
                   onBlur={handleBlur('emailAddress')}
@@ -95,8 +140,8 @@ const ForgotPasswordForm = () => {
 
               {/* OTP */}
 
-              {showOTP ? (
-                <View style={{marginTop: SIZES.padding * 1.5}}>
+              {stepTwo ? (
+                <View style={{ marginTop: SIZES.padding * 1.5 }}>
                   <TextInput
                     onChangeText={handleChange('otp')}
                     onBlur={handleBlur('otp')}
@@ -117,19 +162,25 @@ const ForgotPasswordForm = () => {
                 </View>
               ) : null}
             </View>
+
+
             {stepTwo ? (
-           <View style={buttonStyles.buttonWrapper}>
-           <TouchableOpacity style={buttonStyles.defaultButton}>
-             <Text style={typographyStyles.defaultButtonText}>Verify OTP</Text>
-           </TouchableOpacity>
-         </View>
-          ) : (
-            <View style={buttonStyles.buttonWrapper}>
-            <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
-              <Text style={typographyStyles.defaultButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-          )}
+              <View style={[buttonStyles.buttonWrapper, {
+                marginTop: SIZES.padding * 1,
+              }]}>
+                <TouchableOpacity style={buttonStyles.defaultButton}>
+                  <Text style={typographyStyles.defaultButtonText}>Verify OTP</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={[buttonStyles.buttonWrapper, {
+                marginTop: SIZES.padding * 1,
+              }]}>
+                <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
+                  <Text style={typographyStyles.defaultButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </>
         )}
       </Formik>

@@ -1,5 +1,4 @@
 import { apiAuth } from "../../utils/Config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Register user
 const register = async (formData) => {
@@ -7,6 +6,14 @@ const register = async (formData) => {
   console.log("Register response log", response.data)
   return response.data;
 };
+
+// Forget password
+const forgetPass = async (formData) => {
+    const response = await apiAuth.post("/password/forgot-password", formData);
+    console.log("Forget Password response log", response.data)
+    return response.data;
+  };
+
 
 // Login user
 const login = async (formData) => {
@@ -16,17 +23,11 @@ const login = async (formData) => {
 };
 
 
-const logout = async (formData) => {
-    const response = await apiAuth.post("/login/logout", formData);
-    console.log("logout response log", response.data)
-    return response.data;
-  };
-
 
 const authService = {
   register,
+  forgetPass,
   login,
-  logout
 };
 
 export default authService;

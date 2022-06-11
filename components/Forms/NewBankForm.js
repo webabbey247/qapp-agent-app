@@ -1,90 +1,55 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
-import SelectBox from 'react-native-multi-selectbox';
-import {xorBy} from 'lodash';
-import {Formik} from 'formik';
-import * as Yup from 'yup';
-import {COLORS, SIZES, icons, FONTS} from '../../constants';
-
-import {
-  globalStyles,
-  formStyles,
-  buttonStyles,
-  typographyStyles,
-} from '../../assets/styles';
-
+import React, { useState } from 'react';
+import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { COLORS, SIZES, icons, FONTS } from '../../constants';
+import { bankData } from '../../utils/DummyData';
 const NewBankForm = () => {
-  const [areaCode, setAreaCode] = React.useState([]);
-  const [selectedAreaCode, setSelectedAreaCode] = React.useState('');
-  const [selectedTeam, setSelectedTeam] = React.useState({});
-  const [selectedTeams, setSelectedTeams] = React.useState([]);
+  const [bank, setBank] = useState(bankData);
 
-  React.useEffect(() => {
-    fetch('https://restcountries.com/v3/all')
-      .then(response => response.json())
-      .then(data => {
-        const areaCodeData = data.map(item => {
-          return {
-            code: item.cca2,
-            name: item.name.common,
-            flag: item.flags[1],
-            dialCode: [item.idd.root, (item.idd.suffixes || [])[0]].join(''),
-          };
-        });
+  // const 
+  // const newBank = bank.concat({ "selected": false })
+  // console.log("Hello Bank", newBank);
 
-        setAreaCode(areaCodeData);
-        if (areaCodeData.length > 0) {
-          let defaultAreaData = areaCodeData.filter(a => a.code === 'NG');
-          if (defaultAreaData.length > 0) {
-            setSelectedAreaCode(defaultAreaData[0]);
-            // console.log(selectedAreaCode);
-          }
-        }
-      })
-      .catch(err => {
-        console.error('Request failed', err);
-      });
-  }, []);
-
-  function onMultiChange() {
-    return item => setSelectedTeams(xorBy(selectedTeams, [item], 'id'));
+  console.log("selected banks", bank)
+  const onSelectBank = (item) => {
+    const newItem = bank.map((val) => {
+      if (val.id === item.id) {
+        return { ...val, selected: !val.selected }
+      } else {
+        return val;
+      }
+    })
+    setBank(newItem)
   }
 
-  function onChange() {
-    return val => setSelectedTeam(val);
-  }
+  const selectedBanks = bank.filter(val => val.selected, true);
+  console.log("selected bank",selectedBanks)
 
   return (
     <>
-      <View
-        style={[
-          formStyles.formWrapper,
-          {
-            marginBottom: SIZES.padding * 1,
-          },
-        ]}>
-        {/* Select Country */}
-        <View style={{marginTop: SIZES.padding * 1}}>
-          <SelectBox
-            label="Select Country"
-            options={areaCode}
-            value={selectedTeam}
-            onChange={onChange()}
-            hideInputFilter={false}
-          />
-        </View>
-
-        {/* Select available Banks */}
-        <View style={{marginTop: SIZES.padding * 1}}>
-          <SelectBox
-            label="Select Bank(s)"
-            options={areaCode}
-            selectedValues={selectedTeams}
-            onMultiSelect={onMultiChange()}
-            onTapClose={onMultiChange()}
-            isMulti
-          />
-        </View>
+      <View style={{
+        flex: 1,
+        marginTop: SIZES.padding * 3,
+        paddingHorizontal: SIZES.padding * 2,
+      }}>
+        <FlatList
+          data={bank}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity onPress={() => onSelectBank(item)} style={{
+                paddingVertical: SIZES.padding * 2,
+                backgroundColor: item.selected ? COLORS.breakerBay : COLORS.buttonBgColor,
+                marginVertical: SIZES.padding * 1,
+              }}>
+                <Text style={{
+                  textAlign: 'center',
+                  fontSize: 14,
+                  lineHeight: 18,
+                }}>{item.name}</Text>
+              </TouchableOpacity>
+            )
+          }}
+        />
       </View>
     </>
   );

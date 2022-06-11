@@ -13,7 +13,7 @@ import {
 } from './screens/AuthScreen';
 
 
-import {HomeScreen, MyBankScreen, MyBankInfoScreen} from './screens/HomeScreen';
+import {HomeScreen, MyBankScreen, MyBankInfoScreen, AddBankScreen} from './screens/HomeScreen';
 
 const theme = {
   ...DefaultTheme,
@@ -51,6 +51,7 @@ const HomeStackScreen = () => {
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Bank" component={MyBankScreen} />
       <HomeStack.Screen name="BankInfo" component={MyBankInfoScreen} />
+      <HomeStack.Screen name="AddBank" component={AddBankScreen} />
     </HomeStack.Navigator>
   );
 };

@@ -75,7 +75,7 @@ const globalStyles = StyleSheet.create({
   headerMenuIcon: {
     width: 40,
     height: 40,
-    marginTop: SIZES.padding * 1
+    marginTop: SIZES.padding * 3
   },
 
   headerProfileImg: {

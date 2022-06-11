@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   Animated
 } from 'react-native';
+
 import {
   typographyStyles,
   globalStyles,
@@ -21,10 +21,9 @@ import {
 import { COLORS, icons, images, SIZES } from '../../constants';
 import { HomeSearchForm } from '../../components/Forms';
 import {
-  HeaderLogo,
-  BankCardGrid,
   TransactionCard,
 } from '../../components/commons';
+import { GridBankCard } from '../../components/BankCards/GridBankCard';
 import * as Icon from "react-native-feather";
 
 const HomeScreen = ({ navigation }) => {
@@ -74,9 +73,7 @@ const HomeScreen = ({ navigation }) => {
           marginTop: 15,
           width: 170,
         }}>
-         
-          {/* <Icon.(`${ArrowUpCircle}`) /> */}
-          {image}
+                   {image}
           {/*  */}
           {/* <Image
             source={image}
@@ -145,9 +142,9 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
 
-        <View>
+        <TouchableOpacity>
           {renderMenu(currentTab, setCurrentTab, "LogOut",  <Icon.Power color="white" />)}
-        </View>
+        </TouchableOpacity>
 
       </View>
 
@@ -199,18 +196,18 @@ const HomeScreen = ({ navigation }) => {
               useNativeDriver: true
             })
             .start()
-
-
-            setShowMenu(!showMenu);
-          }}>
-            <Image
-              source={icons.menuIcon}
-              resizeMode="contain"
-              style={globalStyles.headerMenuIcon}
-            />
+            setShowMenu(!showMenu);}}>
+          {showMenu ?  <Icon.X color="white" /> :
+         (<Image
+          source={icons.menuIcon}
+          resizeMode="contain"
+          style={globalStyles.headerMenuIcon}
+        />)
+        }
           </TouchableOpacity>
         </Animated.View>
           <View>
+         
             <Image
               source={images.profileImg}
               resizeMode="contain"
@@ -238,22 +235,7 @@ const HomeScreen = ({ navigation }) => {
 
             {searchForm && <HomeSearchForm />}
 
-            <View style={HomeScreenStyles.subSectionContainer}>
-              <View>
-                <Text style={HomeScreenStyles.subSectionLTR}>Active Banks</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Bank')}
-                style={HomeScreenStyles.subSectionRTLWrapper}>
-                <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={HomeScreenStyles.bankCardContainer}>
-              <BankCardGrid type="grid" />
-              <BankCardGrid type="grid" />
-              <BankCardGrid type="grid" />
-            </View>
+            <GridBankCard navigation={navigation} />
 
             <View style={HomeScreenStyles.subSectionContainer}>
               <View>
@@ -276,98 +258,6 @@ const HomeScreen = ({ navigation }) => {
           </ScrollView>
         </KeyboardAvoidingView>
       </Animated.View>
-
-
-
-      {/* <View style={{
-        flexGrow: 1,
-        backgroundColor: "white",
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        paddingHorizontal: 15,
-        paddingVertical: 20,
-      }}>
-
-        <TouchableOpacity>
-        <Image
-          source={icons.menuIcon}
-          resizeMode="contain"
-          style={{
-            width: 20,
-            height: 20,
-            tintColor: "black",
-            marginTop: 20,
-          }} />
-          <Text style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            color: "black",
-            paddingTop: 20,
-          }}>{currentTab}</Text>
-        </TouchableOpacity>
-
-      </View> */}
-
-
-      {/* <HeaderLogo type="home" />
-        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-          <View style={globalStyles.headerSearchContainer}>
-            <View>
-              <Text style={typographyStyles.textHeading}>Good Morning</Text>
-              <Text style={typographyStyles.textParagraph}>
-                Welcome, {user.firstname}
-              </Text>
-            </View>
-            <TouchableOpacity onPress={() => setSearchForm(!searchForm)}>
-              <Image
-                source={icons.searchIcon}
-                resizeMode="contain"
-                style={globalStyles.headerSearchicon}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {searchForm && <HomeSearchForm />}
-
-          <View style={HomeScreenStyles.subSectionContainer}>
-            <View>
-              <Text style={HomeScreenStyles.subSectionLTR}>Active Banks</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Bank')}
-              style={HomeScreenStyles.subSectionRTLWrapper}>
-              <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={HomeScreenStyles.bankCardContainer}>
-            <BankCardGrid type="grid" />
-            <BankCardGrid type="grid" />
-            <BankCardGrid type="grid" />
-          </View>
-
-          <View style={HomeScreenStyles.subSectionContainer}>
-            <View>
-              <Text style={HomeScreenStyles.subSectionLTR}>
-                Transaction History
-              </Text>
-            </View>
-            <View style={HomeScreenStyles.subSectionRTLWrapper}>
-              <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-            </View>
-          </View>
-
-          <View style={HomeScreenStyles.transactionListContainer}>
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-            <TransactionCard />
-          </View>
-        </ScrollView> */}
     </SafeAreaView>
   );
 };

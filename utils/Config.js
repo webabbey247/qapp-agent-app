@@ -10,4 +10,14 @@ const apiAuth = axios.create({
   },
 });
 
-export { apiAuth,};
+const apiMain = axios.create({
+  baseURL: "http://qapp-agent-main.eu-west-1.elasticbeanstalk.com/api/v1/main",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Locale": { "id": "en", "country": "US", "name": "English - LTR", "direction": "ltr" },
+    "Platform": "MOBILE",
+  },
+});
+
+export { apiAuth, apiMain};

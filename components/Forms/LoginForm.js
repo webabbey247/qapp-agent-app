@@ -38,6 +38,7 @@ const LoginForm = () => {
       } else {
         console.log("isSuccess result tag", loginPayload.result ? loginPayload.result : "")
         // console.log("isSuccess token result tag", loginPayload.result ? loginPayload.result.jwt : "")
+        // AsyncStorage.setItem('logoutDump', JSON.stringify(loginPayload.result))
         AsyncStorage.setItem('userDump', JSON.stringify(loginPayload.result))
         AsyncStorage.setItem('userAuthToken', JSON.stringify(loginPayload.result.jwt))
         setTimeout(() => {
@@ -85,7 +86,7 @@ const LoginForm = () => {
         // }
 
         const loginData = {
-          username: "balogun.abbey28@gmail.com",
+          username: "balogun.abiodunlive@gmail.com",
           password: "Null@001"
         }
         console.log("login data info checker", loginData)
