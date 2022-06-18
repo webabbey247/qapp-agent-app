@@ -1,11 +1,14 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
-import {Formik} from 'formik';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';
-import { login, reset } from '../../features/auth/authSlice';
-import {COLORS, SIZES, icons, FONTS} from '../../constants';
+import { useSelector, useDispatch } from "react-redux";
+import { loginPending, loginSuccess, loginFail } from "../../reducers/Slice/loginSlice";
+import { userLogin } from "../../api/userApi";
+import { COLORS, SIZES, icons, FONTS } from '../../constants';
 import {
   globalStyles,
   formStyles,
@@ -13,47 +16,24 @@ import {
   typographyStyles,
 } from '../../assets/styles';
 import { SnackAlert } from '../../utils/SnackAlert';
-import { Messages } from '../../utils/Messages';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Errors, Messages } from '../../utils/Messages';
 
 
 const LoginForm = () => {
+  const isRendered = React.useRef(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
-  const {loginPayload, isError, isSuccess} = useSelector((state) => state.auth);
-
+  const { isLoading, isAuth, error } = useSelector(state => state.login);
 
   React.useEffect(() => {
+    isRendered.current = true;
+    return () => {
+      isRendered.current = false;
+    };
 
-    if(isError){
-      console.log("isError response tag", loginPayload.message ? loginPayload.message : "")
-    } 
-    
-    if(isSuccess) {
-      console.log("isSuccess response tag", loginPayload.result ? loginPayload.result : "")
-      if(loginPayload.success === false){
-        SnackAlert.show(loginPayload.message ? loginPayload.message : "");
-        console.log("isSuccess response tag", loginPayload.message ? loginPayload.message : "")
-      } else {
-        console.log("isSuccess result tag", loginPayload.result ? loginPayload.result : "")
-        // console.log("isSuccess token result tag", loginPayload.result ? loginPayload.result.jwt : "")
-        // AsyncStorage.setItem('logoutDump', JSON.stringify(loginPayload.result))
-        AsyncStorage.setItem('userDump', JSON.stringify(loginPayload.result))
-        AsyncStorage.setItem('userAuthToken', JSON.stringify(loginPayload.result.jwt))
-        setTimeout(() => {
-          navigation.navigate("HomeScreen", {
-            screen: "Home", 
-              params: {
-              user: loginPayload.result
-            }
-          });
-        }, 500);
-      }
-    }
-    dispatch(reset());    
-  }, [loginPayload, isError, isSuccess, navigation, dispatch])
-  
+  }, [isAuth]);
+
 
 
   const validationSchema = Yup.object().shape({
@@ -61,7 +41,7 @@ const LoginForm = () => {
       .email('Kindly provide a valid email address')
       .required('Kindly provide your registered email address'),
     password: Yup.string()
-      .min(8, ({min}) => `Password must be atleast ${min} characters`)
+      .min(8, ({ min }) => `Password must be atleast ${min} characters`)
       .required('kindly provide your password')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
@@ -76,23 +56,61 @@ const LoginForm = () => {
 
   return (
     <Formik
-      // validationSchema={validationSchema}
+      validationSchema={validationSchema}
       initialValues={loginInfo}
-      onSubmit={(values, formikActions) => {
+      onSubmit={async (values, formikActions) => {
 
-        // const loginData = {
-        //   username: values.emailAddress,
-        //   password: values.password,
-        // }
+        const userData = {
+          email: values.emailAddress,
+          password: values.password,
+        };
+              // email: "tamsay2017@gmail.com",
+          // password: "12345678"
+          // email: "balogun.abbey28@gmail.com",
+          // password: "Null@001"
+          //"username": "balogun.abbey28@gmail.com",
+          // "password": "Null@001"
 
-        const loginData = {
-          username: "balogun.abiodunlive@gmail.com",
-          password: "Null@001"
+        dispatch(loginPending());
+
+        try {
+          const isAuth = await userLogin(userData);
+          console.log("hello isAuth", isAuth);
+
+          NetInfo.fetch().then((state) => {
+            if (state.isConnected) {
+
+              if (isAuth.success == false) {
+                SnackAlert.show(isAuth.message ? isAuth.message : "");
+                console.log("server handshake with error response", isAuth.message ? isAuth.message : "");
+                return dispatch(loginFail(isAuth.message ? isAuth.message : ""));
+              }
+
+              if (isAuth.success == true) {
+                dispatch(loginSuccess(isAuth.result));
+                AsyncStorage.setItem('userDump', JSON.stringify(isAuth.result))
+                AsyncStorage.setItem('userAuthToken', JSON.stringify(isAuth.result.jwt))
+                console.log("..........", isAuth.result)
+                setTimeout(() => {
+                  navigation.navigate('HomeScreen', {
+                    screen: 'Home',
+                    params: { user: isAuth.result },
+                  }
+                  );
+                }, 500);
+                console.log("you will be directed to Dashboard");
+              }
+            } else if (isRendered.current) {
+              Display.show(Errors.Internet);
+            }
+          });
+
+        } catch (e) {
+          dispatch(loginFail(error.message));
+          SnackAlert.show(error.message ? error.message : "");
+          console.log("no server handshake", error.message)
         }
-        console.log("login data info checker", loginData)
-        dispatch(login(loginData));
         formikActions.resetForm();
-
       }}>
       {({
         handleChange,
@@ -105,7 +123,7 @@ const LoginForm = () => {
         <>
           <View style={formStyles.formWrapper}>
             {/* Email Address */}
-            <View style={{marginTop: SIZES.padding * 1}}>
+            <View style={{ marginTop: SIZES.padding * 1 }}>
               <TextInput
                 onChangeText={handleChange('emailAddress')}
                 onBlur={handleBlur('emailAddress')}
@@ -124,7 +142,7 @@ const LoginForm = () => {
             </View>
 
             {/* Password */}
-            <View style={{marginTop: SIZES.padding * 1.5}}>
+            <View style={{ marginTop: SIZES.padding * 1.5 }}>
               <View>
                 <TextInput
                   onChangeText={handleChange('password')}
@@ -164,7 +182,8 @@ const LoginForm = () => {
           </View>
           <View style={buttonStyles.buttonWrapper}>
             <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
-              <Text style={typographyStyles.defaultButtonText}>Sign In</Text>
+              <Text style={typographyStyles.defaultButtonText}>{isLoading ? "Loading...." : "Sign In"}</Text>
+              {/* <Text style={typographyStyles.defaultButtonText}>Sign In</Text> */}
             </TouchableOpacity>
           </View>
           <TouchableOpacity

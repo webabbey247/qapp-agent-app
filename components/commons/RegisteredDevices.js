@@ -2,13 +2,13 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {COLORS, SIZES} from '../../constants';
 
-const RegisteredDevices = () => {
+const RegisteredDevices = ({device, id}) => {
   return (
-    <View style={styles.registeredDeviceList}>
+    <View style={styles.registeredDeviceList} key={id}>
       <View>
-        <Text style={styles.registeredDeviceDesc}>POS Machine 1</Text>
+        <Text style={styles.registeredDeviceDesc}>{device.name}</Text>
         <Text style={styles.registeredDeviceBank}>
-          IMEI: 565661165316511JK46
+          IMEI: {device.number}
         </Text>
       </View>
       <View style={styles.registeredDeviceCta}>

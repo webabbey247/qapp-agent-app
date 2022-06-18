@@ -39,7 +39,7 @@ const globalStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SIZES.padding * 1,
     paddingVertical:
-      Platform.OS === 'ios' ? SIZES.padding * 1.2 : SIZES.padding * 2,
+      Platform.OS === 'ios' ? SIZES.padding * 1.2 : SIZES.padding * 1,
     backgroundColor: COLORS.deepBlue,
     marginTop: SIZES.padding * 2,
     marginBottom: SIZES.padding * 2,
@@ -75,7 +75,7 @@ const globalStyles = StyleSheet.create({
   headerMenuIcon: {
     width: 40,
     height: 40,
-    marginTop: SIZES.padding * 3
+    marginTop: SIZES.padding * 1
   },
 
   headerProfileImg: {

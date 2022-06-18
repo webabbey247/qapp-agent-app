@@ -1,5 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,105 +10,65 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {globalStyles, HomeScreenStyles} from '../../assets/styles';
-import {COLORS, icons, SIZES} from '../../constants';
+import { COLORS, SIZES } from '../../constants';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   OptionTabs,
-  TransactionCard,
-  RegisteredDevices,
   AccountProfile,
 } from '../../components/commons';
+import DeviceList from '../../components/Devices/DeviceList';
+import TransactionList from '../../components/Transactions/TransactionList';
+import CustomHeader from '../../components/CustomHeader/CustomHeader';
+import { fetchAllDevice } from '../../reducers/Actions/devicesAction';
+import { fetchAllTransactions } from '../../reducers/Actions/transactionAction';
+import SectionTitle from '../../components/SectionTitle/SectionTitle';
 
-const MyBankInfoScreen = ({navigation}) => {
-  const [history, setHistory] = React.useState(0);
+
+const MyBankInfoScreen = ({ navigation, route }) => {
+  const dispatch = useDispatch();
+  const [history, setHistory] = React.useState(0);  
+  const { account } = route.params;
+  const { deviceList } = useSelector(state => state.devices)
+  const {transactionList} = useSelector(state => state.transactions)
+  // console.log("hey route", route);
+  // console.log("hey route device list", deviceList);
+  // console.log("hey route traanction list no", transactionList);
+
+  React.useEffect(() => {
+    dispatch(fetchAllDevice(account.accountId));
+    dispatch(fetchAllTransactions);
+  }, [fetchAllDevice, fetchAllTransactions]);
+
 
   return (
     <SafeAreaView
       behavior={Platform.OS === 'ios' ? 'padding' : null}
-      style={{flex: 1, backgroundColor: COLORS.bgColor}}>
-      <KeyboardAvoidingView style={{flex: 1}}>
+      style={{ flex: 1, backgroundColor: COLORS.bgColor }}>
+      <KeyboardAvoidingView style={{ flex: 1 }}>
         <StatusBar animated={true} barStyle="light-content" />
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Bank')}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: SIZES.padding * 1,
-            paddingVertical:
-              Platform.OS === 'ios' ? SIZES.padding * 1.2 : SIZES.padding * 1,
-            backgroundColor: COLORS.deepBlue,
-            marginBottom: SIZES.padding * 2,
-            marginTop: SIZES.padding * 1,
-          }}>
-          <View style={globalStyles.headerImgHolder}>
-            <Image
-              source={icons.chevronLeft}
-              resizeMode="contain"
-              style={globalStyles.headerImg}
-            />
-          </View>
-          <View
-            style={{
-              marginLeft: SIZES.padding * 3,
-            }}>
-            <Text
-              style={{
-                fontWeight: '700',
-                fontSize: 20,
-                lineHeight: 20,
-                marginTop: SIZES.padding * 0.5,
-              }}>
-              Oceanic Bank
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+
+        <CustomHeader navigation={navigation} title={account.bankName} typeUrl="Bank" />
+
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           <View
             style={{
               paddingHorizontal: SIZES.padding * 2,
             }}>
-            <AccountProfile />
+            <AccountProfile data={account} />
           </View>
 
-          {history === 0 ? (
-            <>
-              <View style={HomeScreenStyles.subSectionContainer}>
-                <View>
-                  <Text style={HomeScreenStyles.subSectionLTR}>
-                    Recent History
-                  </Text>
-                </View>
-                <View style={HomeScreenStyles.subSectionRTLWrapper}>
-                  <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-                </View>
-              </View>
-              <View style={HomeScreenStyles.transactionListContainer}>
-                <TransactionCard />
-                <TransactionCard />
-                <TransactionCard />
-                <TransactionCard />
-                <TransactionCard />
-              </View>
-            </>
-          ) : (
-            <>
-              <View style={HomeScreenStyles.subSectionContainer}>
-                <View>
-                  <Text style={HomeScreenStyles.subSectionLTR}>
-                    Registered Devices
-                  </Text>
-                </View>
-                <View style={HomeScreenStyles.subSectionRTLWrapper}>
-                  <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-                </View>
-              </View>
-              <View style={HomeScreenStyles.transactionListContainer}>
-                <RegisteredDevices />
-                <RegisteredDevices />
-                <RegisteredDevices />
-                <RegisteredDevices />
-              </View>
-            </>
+          {account.accountStatus === "Active" && (
+            history === 0 ? (
+              <>
+              {transactionList.length >= 1 && <SectionTitle  navigation={navigation} title="Transaction History" typeUrl="Transaction" />  }
+               <TransactionList data={transactionList} />
+              </>
+            ) : (
+              <>
+                {deviceList.length >= 1 &&  <SectionTitle  navigation={navigation} title="Registered Devices" typeUrl="DeviceHistory" />  }
+              <DeviceList data={deviceList} />       
+              </>
+            )
           )}
         </ScrollView>
         <OptionTabs type="history" setHistory={setHistory} />

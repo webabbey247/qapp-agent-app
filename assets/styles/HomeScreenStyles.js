@@ -43,6 +43,7 @@ const HomeScreenStyles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 2,
     display: 'flex',
     flexDirection: 'column',
+    marginVertical: SIZES.padding * 1,
   },
 });
 

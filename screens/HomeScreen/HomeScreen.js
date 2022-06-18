@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,47 +18,68 @@ import {
   HomeScreenStyles,
 } from '../../assets/styles';
 import { COLORS, icons, images, SIZES } from '../../constants';
-import { HomeSearchForm } from '../../components/Forms';
-import {
-  TransactionCard,
-} from '../../components/commons';
+// import {
+//   TransactionCard,
+// } from '../../components/commons';
+import { SnackAlert } from '../../utils/SnackAlert';
 import { GridBankCard } from '../../components/BankCards/GridBankCard';
 import * as Icon from "react-native-feather";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserData, logOutUser } from '../../reducers/Actions/loginAction';
+import { fetchAllTransactions } from '../../reducers/Actions/transactionAction';
+import SectionTitle from '../../components/SectionTitle/SectionTitle';
+import { isEmpty } from 'lodash';
+import TransactionList from '../../components/Transactions/TransactionList';
+import { Messages } from '../../utils/Messages';
 
-const HomeScreen = ({ navigation }) => {
-  const [searchForm, setSearchForm] = React.useState(false);
-  const [user, setUser] = useState('');
+
+
+const HomeScreen = ({route, navigation }) => {
+  console.log("checking", route);
+// const {user} = route.params;
+console.log("this is user info", route);
+  const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState("Home")
   const [showMenu, setShowMenu] = useState(false);
-
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
+  const {isAuth, user} = useSelector(state => state.login)
+  const {transactionList} = useSelector(state => state.transactions)
 
-  const userData = async () => {
-    try {
-      const userData = JSON.parse(await AsyncStorage.getItem('userDump'))
-      if (userData) {
-        setUser(userData);
-      }
-      console.log("user Info checker", userData)
-      return user
-    }
-    catch (e) {
-      console.log(`user info error issues ${e}`);
-    }
+
+
+
+  const userInfo = user
+
+  console.log("checking status user", userInfo)
+  console.log("checking status isAuth", isAuth)
+
+  const signOut = () => {
+    dispatch(logOutUser())
+    setTimeout(() => {
+      SnackAlert.show(Messages.LogoutResponse);
+      navigation.navigate('AuthScreen', {
+        screen: 'Login',
+      });
+    }, 3000)
   }
 
   React.useEffect(() => {
-    userData();
-  }, []);
+    dispatch(fetchUserData());
+    dispatch(fetchAllTransactions);
+}, [isAuth, fetchAllTransactions, logOutUser]);
+  
 
 
-  const renderMenu = (currentTab, setCurrentTab, title, image) => {
+  const renderMenu = (currentTab, setCurrentTab, title, image, baseUrl) => {
     return (
       <TouchableOpacity onPress={() => {
-        if (title == "LogOut") { } else {
+        if (title == "LogOut") { 
+          signOut();
+        } else {
           setCurrentTab(title)
+          navigation.navigate(`${baseUrl}`)
         }
       }}>
         <View style={{
@@ -73,7 +93,7 @@ const HomeScreen = ({ navigation }) => {
           marginTop: 15,
           width: 170,
         }}>
-                   {image}
+           {image}
           {/*  */}
           {/* <Image
             source={image}
@@ -89,8 +109,6 @@ const HomeScreen = ({ navigation }) => {
             fontWeight: 'bold',
             color: currentTab === title ? "white" : "white",
           }}>{title}</Text>
-
-
         </View>
 
       </TouchableOpacity>
@@ -102,7 +120,6 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView
       behavior={Platform.OS === 'ios' ? 'padding' : null}
       style={{ flex: 1, backgroundColor: COLORS.bgColor }}>
-
 
       <View style={{
         flex: 1,
@@ -124,21 +141,25 @@ const HomeScreen = ({ navigation }) => {
           color: "white",
           fontWeight: "bold",
           marginTop: 20,
-        }}>{user.firstname} {user.lastname}</Text>
+        }}>
+          {userInfo.firstname} {userInfo.lastname}
+          </Text>
 
         <TouchableOpacity>
           <Text style={{
             marginTop: 8,
             color: "white"
-          }}>Last Login: {user.lastLogin}</Text>
+          }}>
+            Last Login: {userInfo ? userInfo.lastLogin : "N/A"}
+          </Text>
         </TouchableOpacity>
 
         {/* Navigation section */}
         <View style={{ flexGrow: 1, marginTop: 50 }}>
-          {renderMenu(currentTab, setCurrentTab, "Home", <Icon.Activity color="white" />)}
-          {renderMenu(currentTab, setCurrentTab, "Banks", <Icon.BarChart color="white" />)}
-          {renderMenu(currentTab, setCurrentTab, "Privacy", <Icon.HelpCircle color="white" />)}
-          {renderMenu(currentTab, setCurrentTab, "Settings", <Icon.Settings color="white" />)}
+          {renderMenu(currentTab, setCurrentTab, "Home", <Icon.Activity color="white" />, "Home")}
+          {renderMenu(currentTab, setCurrentTab, "Banks", <Icon.BarChart color="white" />, "Bank")}
+          {renderMenu(currentTab, setCurrentTab, "Privacy", <Icon.HelpCircle color="white" />, "Home")}
+          {renderMenu(currentTab, setCurrentTab, "Settings", <Icon.Settings color="white" />, "Home")}
         </View>
 
 
@@ -157,7 +178,6 @@ const HomeScreen = ({ navigation }) => {
         left: 0,
         right: 0,
         paddingHorizontal: SIZES.padding * 0.5,
-        // paddingVertical: SIZES.padding * 2,
         borderRadius: showMenu ? 15 : 0,
 
         // transform
@@ -215,46 +235,25 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </View>
-          {/* <HeaderLogo type="home" /> */}
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <View style={globalStyles.headerSearchContainer}>
               <View>
                 <Text style={typographyStyles.textHeading}>Good Morning</Text>
                 <Text style={typographyStyles.textParagraph}>
-                  Welcome, {user.firstname}
+                  Welcome, {userInfo.firstname}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setSearchForm(!searchForm)}>
-                <Image
-                  source={icons.searchIcon}
-                  resizeMode="contain"
-                  style={globalStyles.headerSearchicon}
-                />
-              </TouchableOpacity>
             </View>
 
-            {searchForm && <HomeSearchForm />}
+            <SectionTitle navigation={navigation} title="Active Banks" typeUrl="Bank" />
 
-            <GridBankCard navigation={navigation} />
+            <GridBankCard navigation={navigation}  />
 
-            <View style={HomeScreenStyles.subSectionContainer}>
-              <View>
-                <Text style={HomeScreenStyles.subSectionLTR}>
-                  Transaction History
-                </Text>
-              </View>
-              <View style={HomeScreenStyles.subSectionRTLWrapper}>
-                <Text style={HomeScreenStyles.subSectionRTL}>View All</Text>
-              </View>
-            </View>
+            {/* <SectionTitle  navigation={navigation} title="Transaction History" typeUrl="Transaction" /> */}
 
-            <View style={HomeScreenStyles.transactionListContainer}>
-              <TransactionCard />
-              <TransactionCard />
-              <TransactionCard />
-              <TransactionCard />
-              <TransactionCard />
-            </View>
+            {transactionList.length >= 1 && <SectionTitle  navigation={navigation} title="Transaction History" typeUrl="Transaction" />  }
+               <TransactionList data={transactionList} />
+
           </ScrollView>
         </KeyboardAvoidingView>
       </Animated.View>

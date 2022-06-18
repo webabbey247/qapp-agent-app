@@ -4,6 +4,8 @@ const profileImg = require('../assets/images/user-profile-icon.png');
 const bankOne = require('../assets/images/bank-one.png');
 const bankTwo = require('../assets/images/bank-two.png');
 const bankThree = require('../assets/images/bank-three.png');
+const folderRecords = require('../assets/images/folder-records.png');
+
 
 export default {
   qappLogo,
@@ -11,5 +13,6 @@ export default {
   profileImg,
   bankOne,
   bankTwo,
-  bankThree
+  bankThree,
+  folderRecords
 };

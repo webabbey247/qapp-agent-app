@@ -19,7 +19,7 @@ const LoginScreen = () => {
         <StatusBar animated={true} barStyle="light-content" />
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <HeaderLogo type="general" />
-          <SectionTitle title="Sign in" subtitle="Hello Paragraphy" />
+          <SectionTitle title="Sign in" subtitle="Welcome!" />
           <LoginForm />
         </ScrollView>
       </KeyboardAvoidingView>

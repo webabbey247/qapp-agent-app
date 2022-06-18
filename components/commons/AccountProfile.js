@@ -1,9 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {Image, View, Text, StyleSheet} from 'react-native';
 import {COLORS, images, SIZES} from '../../constants';
+import NumberFormat from 'react-number-format';
 
-const AccountProfile = () => {
+const AccountProfile = ({data}) => {
   return (
     <>
       <View style={styles.bankListCard}>
@@ -14,7 +14,7 @@ const AccountProfile = () => {
             flexDirection: 'row',
           }}>
           <Image
-            source={images.bankOne}
+            source={data.logoUrl ? data.logoUrl : images.bankOne}
             resizeMode="contain"
             style={styles.bankGridCardImg}
           />
@@ -27,15 +27,22 @@ const AccountProfile = () => {
           }}>
           <View style={styles.bankGridtext}>
             <Text style={styles.bankGridDevices}>Account Name</Text>
-            <Text style={styles.bankGridName}>Balogun Abiodun</Text>
+            <Text style={styles.bankGridName}>{data.accountName ? data.accountName : "N/A"}</Text>
           </View>
           <View style={styles.bankGridtext}>
             <Text style={styles.bankGridDevices}>Account Number</Text>
-            <Text style={styles.bankGridName}>3001254683</Text>
+            <Text style={styles.bankGridName}>{data.accountNumber ? data.accountNumber : "N/A"}</Text>
           </View>
           <View style={styles.bankGridtext}>
             <Text style={styles.bankGridDevices}>Account Balance</Text>
-            <Text style={styles.bankGridName}>N32,000,000.00</Text>
+            <NumberFormat
+                value= {data.balance ? data.balance : 0}
+                displayType="text"
+                thousandSeparator
+                decimalScale={2}
+                fixedDecimalScale
+                prefix={"N"}
+                renderText={(value) =>  <Text style={styles.bankGridName}>{`${value}`}</Text>} />
           </View>
         </View>
       </View>

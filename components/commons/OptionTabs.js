@@ -1,26 +1,39 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {COLORS, SIZES} from '../../constants';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { COLORS, SIZES } from '../../constants';
 
-const OptionTabs = ({type, setHistory}) => {
+const OptionTabs = ({ type, setHistory, setDisplayBank }) => {
+  const [activeNav, setActiveNav] = React.useState(1)
   return (
     <>
       {type === 'banks' ? (
         <View style={styles.optionTabsContainer}>
           <View style={styles.optionTabs}>
-            <TouchableOpacity>
-              <Text style={styles.optionTabActive}>Active</Text>
+            <TouchableOpacity onPress={() => {
+              setDisplayBank(1),
+                setActiveNav(1)
+            }}>
+              <Text style={activeNav === 1 ? styles.optionTabActive : styles.optionTabsText}>Active</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.optionTabsText}>Approved</Text>
+            <TouchableOpacity onPress={() => {
+              setDisplayBank(2),
+                setActiveNav(2)
+            }}>
+              <Text style={activeNav === 2 ? styles.optionTabActive : styles.optionTabsText}>Approved</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              <Text style={styles.optionTabsText}>Pending</Text>
+            <TouchableOpacity onPress={() => {
+              setDisplayBank(3),
+                setActiveNav(3)
+            }}>
+              <Text style={activeNav === 3 ? styles.optionTabActive : styles.optionTabsText}>Pending</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              <Text style={styles.optionTabsText}>Inactive</Text>
+            <TouchableOpacity onPress={() => {
+              setDisplayBank(4),
+                setActiveNav(4)
+            }}>
+              <Text style={activeNav === 4 ? styles.optionTabActive : styles.optionTabsText}>Inactive</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -33,11 +46,17 @@ const OptionTabs = ({type, setHistory}) => {
             },
           ]}>
           <View style={styles.optionTabs}>
-            <TouchableOpacity onPress={() => setHistory(0)}>
-              <Text style={styles.optionTabsText}>Transaction History</Text>
+            <TouchableOpacity onPress={() => {
+              setHistory(0),
+                setActiveNav(1)
+            }}>
+              <Text style={activeNav === 1 ? styles.optionTabActive : styles.optionTabsText}>Transaction History</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setHistory(1)}>
-              <Text style={styles.optionTabsText}>Registered Devices</Text>
+            <TouchableOpacity onPress={() => {
+              setHistory(1),
+                setActiveNav(2)
+            }}>
+              <Text style={activeNav === 2 ? styles.optionTabActive : styles.optionTabsText}>Registered Devices</Text>
             </TouchableOpacity>
           </View>
         </View>

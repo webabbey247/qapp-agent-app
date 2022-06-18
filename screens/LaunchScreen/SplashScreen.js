@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, SafeAreaView, StatusBar, Platform, Image, ActivityIndicator } from 'react-native';
 import { images, COLORS } from '../../constants';
@@ -6,7 +6,9 @@ import { splashScreenStyles } from '../../assets/styles';
 import { useSelector } from 'react-redux';
 
 const SplashScreen = ({ navigation }) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+
+  // check if user is logged
   const userToken = async () => {
     try {
       setLoading(true)
@@ -16,12 +18,14 @@ const SplashScreen = ({ navigation }) => {
           setTimeout(() => {
             navigation.navigate('HomeScreen', {
               screen: 'Home',
+              token: token ? token : ""
             });
           }, 4000)
         ) : (
           setTimeout(() => {
             navigation.navigate('AuthScreen', {
               screen: 'Login',
+              token: token ? token : ""
             });
           }, 4000)
         )
@@ -38,14 +42,14 @@ const SplashScreen = ({ navigation }) => {
   },[]);
 
 
-if(loading) {
-    return (
-        <View style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
-      <ActivityIndicator size={"large"} />
-    </View>
-    )
+  if(loading) {
+      return (
+          <View style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
+        <ActivityIndicator size={"large"} />
+      </View>
+      )
 
-  }
+    }
 
 
   const renderSplashLogo = (

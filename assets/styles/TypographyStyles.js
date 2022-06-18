@@ -10,10 +10,10 @@ const typographyStyles = StyleSheet.create({
   textHeading: {
     color: COLORS.grayColor,
     fontWeight: '700',
-    fontSize: 28,
+    fontSize: 22,
     lineHeight: 28,
     fontFamily: Platform.OS === 'ios' ? 'Montserrat Bold' : 'Montserrat-Bold',
-    marginBottom: SIZES.padding * 1,
+    marginBottom: SIZES.padding * 0.5,
   },
 
   textHeadingTwo: {},

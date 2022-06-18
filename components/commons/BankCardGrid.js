@@ -10,13 +10,15 @@ import { COLORS, images, SIZES } from '../../constants';
 import {useNavigation} from '@react-navigation/native';
 
 
-const BankCardGrid = ({type}) => {
+const BankCardGrid = ({type, data, id}) => {
     const navigation = useNavigation();
     return (
-        <>
-        {type === 'list' ? (
-             <TouchableOpacity
-             onPress={() => navigation.navigate('BankInfo')}
+       <>
+       {type === 'list' ? (
+         <TouchableOpacity key={id}
+             onPress={() => navigation.navigate("BankInfo", {
+                 account: data,
+             })}
              style={styles.bankListCard}>
              <View style={{
                  display: 'flex',
@@ -24,7 +26,7 @@ const BankCardGrid = ({type}) => {
              }}>
                  <View>
                      <Image
-                         source={images.bankOne}
+                         source={data.logoUrl ? data.logoUrl : images.bankOne}
                          resizeMode="contain"
                          style={[styles.bankGridCardImg, {
                              height: 50,
@@ -39,11 +41,11 @@ const BankCardGrid = ({type}) => {
                      }]}>
                      <Text
                          style={styles.bankGridName}>
-                         Oceanic
+                         {data.bankName}
                      </Text>
                      <Text
                          style={styles.bankGridDevices}>
-                         10 Devices
+                        {data.totalDevices ? data.totalDevices : "0"} {data.totalDevices > 1 ? "Devices" : "Device"}
                      </Text>
                  </View>
              </View>
@@ -59,15 +61,19 @@ const BankCardGrid = ({type}) => {
                  </Text>
              </View>
          </TouchableOpacity>
-        ) : (
-            <TouchableOpacity
-            onPress={() => navigation.navigate('BankInfo')}
+        )  : (
+            <TouchableOpacity key={id}
+             onPress={() => navigation.navigate("BankInfo", {
+                 account: data,
+             })}
             style={styles.bankGridCard}>
             <View>
                 <View>
+                 
+                   
                     <Image
-                        source={images.bankOne}
-                        resizeMode="contain"
+                         source={data.logoUrl ? data.logoUrl : images.bankOne}
+                         resizeMode="contain"
                         style={styles.bankGridCardImg}
                     />
                 </View>
@@ -75,11 +81,11 @@ const BankCardGrid = ({type}) => {
                     style={styles.bankGridtext}>
                     <Text
                         style={styles.bankGridName}>
-                        Oceanic
+                       {data.bankName}
                     </Text>
                     <Text
                         style={styles.bankGridDevices}>
-                        10 Devices
+                         {data.totalDevices ? data.totalDevices : "0"} {data.totalDevices > 1 ? "Devices" : "Device"}
                     </Text>
                 </View>
             </View>
@@ -92,9 +98,12 @@ const BankCardGrid = ({type}) => {
             </View>
         </TouchableOpacity>
         )}
-        </>
-    );
-};
+   </>
+   
+); 
+}
+
+   
 
 export default BankCardGrid;
 
@@ -109,12 +118,12 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         paddingVertical: SIZES.padding * 2,
         paddingHorizontal: SIZES.padding * 1,
-        width: 124,
+        width: 130,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: SIZES.padding * 1.5,
-    },
+        // marginRight: SIZES.padding * 1.5,
+     },
 
     bankListCard: {
         backgroundColor: '#123D51',
@@ -124,11 +133,10 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         paddingVertical: SIZES.padding * 0.5,
         paddingHorizontal: SIZES.padding * 2,
-        width: '100%',
         display: 'flex',
+        width: "100%",
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginRight: SIZES.padding * 1.5,
         marginBottom: SIZES.padding * 1.5,
     },
 

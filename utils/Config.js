@@ -7,6 +7,7 @@ const apiAuth = axios.create({
     "Content-Type": "application/json",
     "Locale": { "id": "en", "country": "US", "name": "English - LTR", "direction": "ltr" },
     "Platform": "MOBILE",
+
   },
 });
 

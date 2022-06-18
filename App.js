@@ -1,19 +1,17 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import {LogBox} from 'react-native';
-import {SplashScreen} from './screens/LaunchScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { LogBox } from 'react-native';
+import { SplashScreen } from './screens/LaunchScreen';
 import {
   LoginScreen,
   SignUpScreen,
   ForgotPassScreen,
   ResetPassScreen,
 } from './screens/AuthScreen';
-
-
-import {HomeScreen, MyBankScreen, MyBankInfoScreen, AddBankScreen} from './screens/HomeScreen';
+import { HomeScreen, MyBankScreen, MyBankInfoScreen, AddBankScreen } from './screens/HomeScreen';
 
 const theme = {
   ...DefaultTheme,
@@ -32,10 +30,12 @@ const LaunchStackScreen = () => {
   );
 };
 
+
+
 const AuthStack = createStackNavigator();
 const AuthStackScreen = () => {
   return (
-    <AuthStack.Navigator headerMode="none">
+    <AuthStack.Navigator headerMode="none" initialRouteName={'Login'}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="SignUp" component={SignUpScreen} />
       <AuthStack.Screen name="ForgotPass" component={ForgotPassScreen} />
@@ -74,11 +74,12 @@ const RootStackScreen = () => {
 LogBox.ignoreAllLogs(true);
 
 const App = () => {
+ 
   return (
     <Provider store={store}>
-    <NavigationContainer theme={theme}>
-      <RootStackScreen />
-    </NavigationContainer>
+        <NavigationContainer theme={theme}>
+          <RootStackScreen />
+        </NavigationContainer>
     </Provider>
   );
 };

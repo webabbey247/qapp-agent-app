@@ -10,14 +10,16 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { register, reset } from '../../features/auth/authSlice';
+import { registerPending, registerSuccess, registerFail } from "../../reducers/Slice/userRegistrationSlice";
+import { userRegistration } from "../../api/userApi";
 import { COLORS, SIZES, icons, FONTS } from '../../constants';
 import { SnackAlert } from '../../utils/SnackAlert';
-import { Messages } from '../../utils/Messages';
+import {Errors, Messages } from '../../utils/Messages';
 import {
   globalStyles,
   formStyles,
@@ -26,6 +28,7 @@ import {
 } from '../../assets/styles';
 
 const SignUpForm = () => {
+  const isRendered = React.useRef(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [password, setPassword] = useState(false);
@@ -33,10 +36,12 @@ const SignUpForm = () => {
   const [areaCode, setAreaCode] = useState([]);
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [modalVisbile, setModalVisible] = useState(false);
-  const {registerPayload, isError, isSuccess, userJWTToken }  = useSelector((state) => state.auth)
+  const { isLoading, error } = useSelector(state => state.registration);
 
 
   React.useEffect(() => {
+    isRendered.current = true;
+
     fetch('https://restcountries.com/v3/all')
       .then(response => response.json())
       .then(data => {
@@ -62,32 +67,12 @@ const SignUpForm = () => {
         console.error('Request failed', err);
       });
 
-      if(isError){
-        console.log("isError response tag", registerPayload.message ? registerPayload.message : "")
-      } 
-      
-      if(isSuccess) {
-        if(registerPayload.success === false){
-          SnackAlert.show(registerPayload.message ? registerPayload.message : "");
-          console.log("isSuccess response tag", registerPayload.message ? registerPayload.message : "")
-        } else {
-          setTimeout(() => {
-            navigation.navigate("Login");
-          }, 500);
-          SnackAlert.show(Messages.RegisterStatus);
-        }
-      }
-      dispatch(reset());
+      return () => {
+        isRendered.current = false;
+      };
 
-  }, [registerPayload, isError, isSuccess, navigation, dispatch]);
+  }, []);
 
-  const searchFilterFunction = text => {
-    const newData = areaCode.filter(item => {
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setAreaCode(newData);
-  };
 
   const renderSearchHeader = () => {
     return (
@@ -217,8 +202,17 @@ const SignUpForm = () => {
     <Formik
       validationSchema={validationSchema}
       initialValues={registerInfo}
-      onSubmit={(values, formikActions) => {
-        console.log(values);
+      onSubmit={async (values, formikActions) => {
+        
+        // const registerData = {
+        //   first_name: "Frank",
+        //   last_name: "Obaidi",
+        //   phone: "+2347037515043",
+        //   email: "frankobiadi@gmail.com",
+        //   password: "Null@001",
+        //   confirm_password:  "Null@001",
+        //   is_confirm_password: true
+        // }
 
         const registerData = {
           first_name: values.firstName,
@@ -229,8 +223,37 @@ const SignUpForm = () => {
           confirm_password: values.confirmPassword,
           is_confirm_password: true
         }
-        console.log("register data info checker", registerData)
-        dispatch(register(registerData));
+
+        dispatch(registerPending());
+        
+        try {
+          const isRegistered = await userRegistration(registerData);
+          console.log("hello isRegistered", isRegistered);
+
+          NetInfo.fetch().then((state) => {
+            if (state.isConnected) {
+
+              if (isRegistered.success === false) {
+                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+                console.log("server handshake with error response", isRegistered.message ? isRegistered.message : "");
+                return dispatch(registerFail(isRegistered.message ? isRegistered.message : ""));
+              }
+
+              if (isRegistered.success === true) {
+                dispatch(registerSuccess());
+                SnackAlert.show(Messages.RegisterStatus);
+                console.log("you have successfully logged in");
+              }
+            } else if (isRendered.current) {
+              Display.show(Errors.Internet);
+            }
+          });
+
+        } catch (error) {
+          dispatch(registerFail(error.message));
+          SnackAlert.show(error.message ? error.message : "");
+          console.log("no server handshake", error.message)
+        }
         formikActions.resetForm();
       }}>
       {({

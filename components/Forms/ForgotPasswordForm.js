@@ -13,48 +13,29 @@ import {
 } from '../../assets/styles';
 import { SnackAlert } from '../../utils/SnackAlert';
 import { Messages } from '../../utils/Messages';
+import { forgetUserPass } from '../../api/forgetPassApi';
+import {
+  validateEmailPending,
+validateEmailSuccess,
+validateEmailFail,
+validateOTPPending,
+validateOTPSuccess,
+validateOTPFail,
+validateNewPassPending,
+validateNewPassSuccess,
+validateNewPassFail
+} from "../../reducers/Slice/forgetPassSlice"
+
 
 
 const ForgotPasswordForm = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [stepTwo, setSteptwo] = React.useState(false);
-  const { forgetPayload, isError, isSuccess } = useSelector((state) => state.auth);
+  const { token, error, showOTPForm } = useSelector((state) => state.forgetPass);
 
-  React.useEffect(() => {
-
-    if (isError) {
-      console.log("isError response tag", forgetPayload.message ? forgetPayload.message : "")
-    }
-
-    if (isSuccess) {
-      console.log("isSuccess response tag", forgetPayload.result ? forgetPayload.result : "")
-      if (forgetPayload.success === false) {
-        SnackAlert.show(forgetPayload.message ? forgetPayload.message : "");
-        // console.log("isSuccess response tag", forgetPayload.message ? forgetPayload.message : "")
-      } else {
-        if (stepTwo) {
-          console.log("isSuccess token result tag", forgetPayload.result ? forgetPayload.result.token : "")
-          setTimeout(() => {
-            navigation.navigate("ResetPass",{
-                params: {
-                token: forgetPayload.result.token
-              }
-            });
-          }, 500);
-        } else {
-          SnackAlert.show(forgetPayload.message ? forgetPayload.message : "");
-          setSteptwo(true);
-          console.log("isSuccess result tag", forgetPayload.result ? forgetPayload.result : "")
-        }
-
-      }
-    }
-    // dispatch(reset());
-  }, [forgetPayload, isError, isSuccess])
-
-
-
+  console.log("get token state", token)
+  console.log("get showOTP form state", showOTPForm)
 
   const validationOneSchema = Yup.object().shape({
     emailAddress: Yup.string()
@@ -84,24 +65,90 @@ const ForgotPasswordForm = () => {
     <>
       <Formik
         validationSchema={
-          stepTwo ? validationStepTwoSchema : validationOneSchema
+          showOTPForm ? validationStepTwoSchema : validationOneSchema
         }
         initialValues={resetPassInfo}
-        onSubmit={(values, formikActions) => {
+        onSubmit={async (values, formikActions) => {
 
           const resetPassInfo = {
-            emailAddress: values.emailAddress,
-            otp: stepTwo ? values.otp : "",
+            // email: "balogun.abiodunlive@gmail.com",
+            email: values.emailAddress
           };
 
-          if (stepTwo) {
-            // dispatch(forgetPass(resetPassInfo));
-            console.log("Step Two Reset Password", resetPassInfo)
-          } else {
-            console.log("Forget Password", resetPassInfo)
-            dispatch(forgetPass(resetPassInfo));
+          // dispatch(registerPending());
+          // NetInfo.fetch().then((state) => {
+          //   if (state.isConnected) {
+
+          try {
+          
+            if(showOTPForm){
+
+            } else {
+              dispatch(validateEmailPending());
+
+              const isRegistered = await forgetUserPass(resetPassInfo);
+
+              if (isRegistered.success === false) {
+                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+                console.log("server handshake with error response", isRegistered.message ? isRegistered.message : "");
+                return dispatch(validateEmailFail(isRegistered.message ? isRegistered.message : ""));
+             
+              } else {
+                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+                dispatch(validateEmailSuccess())
+              }
+            }
+
+          } catch (error) {
+            dispatch(validateEmailFail(error.message));
+            SnackAlert.show(error.message ? error.message : "");
+            console.log("no server handshake", error.message)
           }
-          // formikActions.resetForm();
+        
+          
+        //   else if (isRendered.current) {
+        //     Display.show("Kindly check your internet connections");
+        //   }
+        // });
+
+            // const isRegistered = await userRegistration(registerData);
+            // console.log("hello isRegistered", isRegistered);
+  
+          //   NetInfo.fetch().then((state) => {
+          //     if (state.isConnected) {
+  
+          //       if (isRegistered.success === false) {
+          //         SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+          //         console.log("server handshake with error response", isRegistered.message ? isRegistered.message : "");
+          //         return dispatch(registerFail(isRegistered.message ? isRegistered.message : ""));
+          //       }
+  
+          //       if (isRegistered.success === true) {
+          //         dispatch(registerSuccess());
+          //         SnackAlert.show(Messages.RegisterStatus);
+          //         console.log("you have successfully logged in");
+          //       }
+          //     } else if (isRendered.current) {
+          //       Display.show(Errors.Internet);
+          //     }
+          //   })
+  
+          // } catch (error) {
+          //   dispatch(registerFail(error.message));
+          //   SnackAlert.show(error.message ? error.message : "");
+          //   console.log("no server handshake", error.message)
+          // }
+
+
+          // if (stepTwo) {
+          //   // dispatch(forgetPass(resetPassInfo));
+          //   console.log("Step Two Reset Password", resetPassInfo)
+          // } else {
+          //   console.log("Forget Password", resetPassInfo)
+          //   dispatch(forgetPass(resetPassInfo));
+          // }
+          
+          formikActions.resetForm();
         }}>
         {({
           handleChange,
@@ -140,8 +187,11 @@ const ForgotPasswordForm = () => {
 
               {/* OTP */}
 
-              {stepTwo ? (
+              {showOTPForm ? (
                 <View style={{ marginTop: SIZES.padding * 1.5 }}>
+                   <Text style={formStyles.formLabel}>
+                                  OTP
+                                </Text>
                   <TextInput
                     onChangeText={handleChange('otp')}
                     onBlur={handleBlur('otp')}
@@ -158,17 +208,17 @@ const ForgotPasswordForm = () => {
                       {errors.otp}
                     </Text>
                   ) : null}
-                  <Text style={formStyles.formBottomLabel}>Enter the OTP sent to joh****@email.com</Text>
+                  {/* <Text style={formStyles.formBottomLabel}>Enter the OTP sent to joh****@email.com</Text> */}
                 </View>
               ) : null}
             </View>
 
 
-            {stepTwo ? (
+            { showOTPForm ? (
               <View style={[buttonStyles.buttonWrapper, {
                 marginTop: SIZES.padding * 1,
               }]}>
-                <TouchableOpacity style={buttonStyles.defaultButton}>
+                <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
                   <Text style={typographyStyles.defaultButtonText}>Verify OTP</Text>
                 </TouchableOpacity>
               </View>
@@ -180,7 +230,27 @@ const ForgotPasswordForm = () => {
                   <Text style={typographyStyles.defaultButtonText}>Continue</Text>
                 </TouchableOpacity>
               </View>
-            )}
+            )
+          }
+
+
+            {/* {showOTPForm ? (
+              <View style={[buttonStyles.buttonWrapper, {
+                marginTop: SIZES.padding * 1,
+              }]}>
+                <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
+                  <Text style={typographyStyles.defaultButtonText}>Verify OTP</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={[buttonStyles.buttonWrapper, {
+                marginTop: SIZES.padding * 1,
+              }]}>
+                <TouchableOpacity onPress={handleSubmit} style={buttonStyles.defaultButton}>
+                  <Text style={typographyStyles.defaultButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            )} */}
           </>
         )}
       </Formik>

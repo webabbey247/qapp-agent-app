@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
-import {globalStyles} from '../../assets/styles';
-import {images, icons, SIZES} from '../../constants';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { globalStyles } from '../../assets/styles';
+import { images, icons, SIZES } from '../../constants';
 
-const HeaderLogo = ({navigation, type}) => {
+const HeaderLogo = ({ navigation, type }) => {
   return (
     <>
       {type === 'register' && (
@@ -45,6 +45,7 @@ const HeaderLogo = ({navigation, type}) => {
         </TouchableOpacity>
       )}
 
+
       {type === 'home' && (
         <View style={globalStyles.homeHeaderContainer}>
           <View>
@@ -62,6 +63,18 @@ const HeaderLogo = ({navigation, type}) => {
             />
           </View>
         </View>
+      )}
+
+      {type === 'Onboard Bank' && (
+        <TouchableOpacity onPress={() => navigation.navigate('Bank')} style={globalStyles.headerContainer}>
+          <View style={globalStyles.headerImgHolder}>
+            <Image
+              source={icons.chevronLeft}
+              resizeMode="contain"
+              style={globalStyles.headerImg}
+            />
+          </View>
+        </TouchableOpacity>
       )}
     </>
   );

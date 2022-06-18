@@ -1,5 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,55 +13,47 @@ import {
 } from 'react-native';
 import {
   typographyStyles,
-  globalStyles,
   HomeScreenStyles,
   buttonStyles,
 } from '../../assets/styles';
-import {COLORS, icons, SIZES} from '../../constants';
-import {OptionTabs, BankCardGrid} from '../../components/commons';
+import CustomHeader from '../../components/CustomHeader/CustomHeader';
+import { isEmpty } from 'lodash';
+import { useSelector, useDispatch } from 'react-redux';
+import { COLORS, SIZES } from '../../constants';
+import { OptionTabs, BankCardGrid } from '../../components/commons';
+import { ActiveBanks, ApprovedBanks, PendingBanks, InactiveBanks } from '../../components/BankCards';
+import { fetchActiveBanks, fetchPendingBanks, fetchApprovedBanks } from '../../reducers/Actions/bankAction';
 
-const MyBankScreen = ({navigation}) => {
+
+const MyBankScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const [displayBank, setDisplayBank] = useState(1);
+  const { activeBankList, pendingBankList, approvedBankList } = useSelector(state => state.banks)
+
+  // const activeBanks = activeBankList
+  // const pendingBankz = pendingBankList
+  console.log("checking active bank status", activeBankList)
+  console.log("checking pending back status", pendingBankList)
+  console.log("checking pending back status", approvedBankList)
+
+  React.useEffect(() => {
+    dispatch(fetchActiveBanks());
+    dispatch(fetchPendingBanks());
+    dispatch(fetchApprovedBanks());
+  }, [fetchActiveBanks, fetchApprovedBanks, fetchPendingBanks]);
+
+
+
   return (
     <SafeAreaView
       behavior={Platform.OS === 'ios' ? 'padding' : null}
-      style={{flex: 1, backgroundColor: COLORS.bgColor}}>
-      <KeyboardAvoidingView style={{flex: 1}}>
+      style={{ flex: 1, backgroundColor: COLORS.bgColor }}>
+      <KeyboardAvoidingView style={{ flex: 1 }}>
         <StatusBar animated={true} barStyle="light-content" />
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Home')}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: SIZES.padding * 1,
-            paddingVertical:
-              Platform.OS === 'ios' ? SIZES.padding * 1.2 : SIZES.padding * 1,
-            backgroundColor: COLORS.deepBlue,
-            marginBottom: SIZES.padding * 2,
-            marginTop: SIZES.padding * 1,
-          }}>
-          <View style={globalStyles.headerImgHolder}>
-            <Image
-              source={icons.chevronLeft}
-              resizeMode="contain"
-              style={globalStyles.headerImg}
-            />
-          </View>
-          <View
-            style={{
-              marginLeft: SIZES.padding * 3,
-            }}>
-            <Text
-              style={{
-                fontWeight: '700',
-                fontSize: 20,
-                lineHeight: 20,
-                marginTop: SIZES.padding * 1,
-              }}>
-              My Banks
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+
+        <CustomHeader navigation={navigation} title="My Banks" typeUrl="Home" />
+
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           <View
             style={[
               HomeScreenStyles.bankCardContainer,
@@ -70,15 +62,29 @@ const MyBankScreen = ({navigation}) => {
                 marginVertical: SIZES.padding * 0.3,
               },
             ]}>
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
-            <BankCardGrid type="list" />
+
+            {displayBank === 1 && (
+              <ActiveBanks navigation={navigation} bank={activeBankList} />
+            )}
+
+            {displayBank === 2 && (
+              <ApprovedBanks navigation={navigation} bank={approvedBankList} />
+            )}
+
+
+            {displayBank === 3 && (
+              <PendingBanks navigation={navigation} bank={pendingBankList} />
+            )}
+
+
+            {/* 
+
+           
+            {displayBank === 4 && (
+              <InactiveBanks navigation={navigation} token={user.jwt} />
+            )} */}
+
+            {/* <BankCardGrid type="list" /> */}
           </View>
         </ScrollView>
 
@@ -87,7 +93,7 @@ const MyBankScreen = ({navigation}) => {
             <Text style={typographyStyles.defaultButtonText}>Add new bank</Text>
           </TouchableOpacity>
         </View>
-        <OptionTabs type="banks" />
+        <OptionTabs setDisplayBank={setDisplayBank} type="banks" />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

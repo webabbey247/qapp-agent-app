@@ -1,4 +1,4 @@
-import { apiAuth } from "../../utils/Config";
+import { apiAuth } from "../../utils/config";
 
 // Register user
 const register = async (formData) => {
