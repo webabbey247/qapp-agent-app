@@ -25,6 +25,7 @@ validateNewPassPending,
 validateNewPassSuccess,
 validateNewPassFail
 } from "../../reducers/Slice/forgetPassSlice"
+import { isEmpty } from 'lodash';
 
 
 
@@ -47,7 +48,7 @@ const ForgotPasswordForm = () => {
     emailAddress: Yup.string()
       .email('Kindly provide a valid email address')
       .required('Kindly provide your registered email address'),
-    otp: Yup.string()
+    code: Yup.string()
       .required(
         'Kindly provide the OTP sent to your email address.',
       )
@@ -58,7 +59,7 @@ const ForgotPasswordForm = () => {
 
   const resetPassInfo = {
     emailAddress: '',
-    otp: '',
+    code: '',
   };
 
   return (
@@ -72,7 +73,9 @@ const ForgotPasswordForm = () => {
 
           const resetPassInfo = {
             // email: "balogun.abiodunlive@gmail.com",
-            email: values.emailAddress
+            // code: "",
+            email: values.emailAddress,
+            // code: showOTPForm ? values.code : ""
           };
 
           // dispatch(registerPending());
@@ -82,21 +85,50 @@ const ForgotPasswordForm = () => {
           try {
           
             if(showOTPForm){
+              console.log("tracking OTP form")
+              // dispatch(validateOTPPending())
 
+              // const isVerified = await forgetUserPass(resetPassInfo);
+
+              // if (isVerified.success === false) {
+              //   SnackAlert.show(isVerified.message ? isVerified.message : "");
+              //   console.log("server handshake with error response", isVerified.message ? isVerified.message : "");
+              //   return dispatch(validateOTPFail(isVerified.message ? isVerified.message : ""));
+             
+              // } else {
+                
+              //   dispatch(validateOTPSuccess())
+              //   console.log("server handshake with success response", isVerified.message ? isVerified.message : "");
+              //   SnackAlert.show(isVerified.message ? isVerified.message : "");
+              //   dispatch(validateOTPSuccess())
+              //   setTimeout(() => {
+              //     navigation.navigate('ResetPassScreen', {
+              //       params: { token: isVerified.result },
+              //     }
+              //     );
+              //   }, 500);
+                
+              // }
             } else {
               dispatch(validateEmailPending());
-
               const isRegistered = await forgetUserPass(resetPassInfo);
+              console.log("tracking email form form", resetPassInfo)
 
-              if (isRegistered.success === false) {
-                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
-                console.log("server handshake with error response", isRegistered.message ? isRegistered.message : "");
-                return dispatch(validateEmailFail(isRegistered.message ? isRegistered.message : ""));
-             
-              } else {
-                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+              if(isRegistered.success === true){
                 dispatch(validateEmailSuccess())
+                SnackAlert.show(isRegistered.message ? isRegistered.message : "");
               }
+
+
+              // if (isRegistered.success === false) {
+              //   SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+              //   console.log("server handshake with error response", isRegistered.message ? isRegistered.message : "");
+              //   return dispatch(validateEmailFail(isRegistered.message ? isRegistered.message : ""));
+             
+              // } else {
+              //   dispatch(validateEmailSuccess())
+              //   SnackAlert.show(isRegistered.message ? isRegistered.message : "");
+              // }
             }
 
           } catch (error) {
@@ -193,9 +225,9 @@ const ForgotPasswordForm = () => {
                                   OTP
                                 </Text>
                   <TextInput
-                    onChangeText={handleChange('otp')}
-                    onBlur={handleBlur('otp')}
-                    value={values.otp}
+                    onChangeText={handleChange('code')}
+                    onBlur={handleBlur('code')}
+                    value={values.code}
                     style={formStyles.defaultTextInput}
                     placeholder="Enter OTP"
                     placeholderTextColor={COLORS.placeHolderColor}
@@ -203,9 +235,9 @@ const ForgotPasswordForm = () => {
                     keyboardType="number-pad"
                     maxLength={6}
                   />
-                  {errors.otp && touched.otp ? (
+                  {errors.code && touched.code ? (
                     <Text style={formStyles.formErrorText}>
-                      {errors.otp}
+                      {errors.code}
                     </Text>
                   ) : null}
                   {/* <Text style={formStyles.formBottomLabel}>Enter the OTP sent to joh****@email.com</Text> */}

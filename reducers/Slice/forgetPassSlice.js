@@ -34,14 +34,14 @@ const loginSlice = createSlice({
     validateOTPSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.token = payload;
-      state.showOTPForm = false;
-      state.showNewpassForm = true
+      state.showOTPForm = true
       state.error = "";
     },
 
     validateOTPFail: (state, { payload }) => {
       state.isLoading = false;
       state.error = payload;
+      state.showOTPForm = false
     },
 
     validateNewPassPending: (state) => {

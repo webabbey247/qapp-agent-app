@@ -8,7 +8,7 @@ const globalStyles = StyleSheet.create({
   },
 
   forgotPasswordWrapper: {
-    paddingVertical: SIZES.padding * 1,
+    paddingVertical: SIZES.padding * 2,
     paddingHorizontal: SIZES.padding * 2,
   },
 
